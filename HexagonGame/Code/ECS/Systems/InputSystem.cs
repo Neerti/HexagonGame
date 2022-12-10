@@ -40,9 +40,12 @@ public class InputSystem
 		{
 			movementDirection += -Vector2.UnitX;
 		}
+		
+		
 
 		if (movementDirection != Vector2.Zero)
 		{
+			game.CameraSystem.MoveCamera(game.World, movementDirection, cameraSpeed, gameTime);
 			game.World.PositionComponents.Get(game.World.CameraEntity).Position += movementDirection * cameraSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 		}
 

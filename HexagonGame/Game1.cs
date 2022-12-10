@@ -16,6 +16,7 @@ public class Game1 : Game
 	public World World;
 	private InputSystem _inputSystem;
 	public RenderingSystem RenderingSystem;
+	public CameraSystem CameraSystem;
 
 	public Game1()
 	{
@@ -31,6 +32,7 @@ public class Game1 : Game
 		Window.AllowUserResizing = true;
 
 		RenderingSystem = new RenderingSystem();
+		CameraSystem = new CameraSystem();
 
 		// Create the world.
 		// Later on this should be part of starting a new game or loading a save file.

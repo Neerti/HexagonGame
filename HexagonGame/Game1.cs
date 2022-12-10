@@ -1,5 +1,4 @@
-﻿using System;
-using HexagonGame.ECS.Components;
+﻿using HexagonGame.ECS.Components;
 using HexagonGame.ECS.EntityGrids;
 using HexagonGame.ECS.SparseSets;
 using HexagonGame.ECS.Systems;
@@ -11,17 +10,16 @@ namespace HexagonGame;
 
 public class Game1 : Game
 {
-	private Texture2D _hexagonTexture;
-
-	private GraphicsDeviceManager _graphics;
-	private SpriteBatch _spriteBatch;
+	public GraphicsDeviceManager Graphics;
+	public SpriteBatch SpriteBatch;
 
 	public World World;
 	private InputSystem _inputSystem;
+	public RenderingSystem RenderingSystem;
 
 	public Game1()
 	{
-		_graphics = new GraphicsDeviceManager(this);
+		Graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
 		IsFixedTimeStep = false;
@@ -31,6 +29,8 @@ public class Game1 : Game
 	{
 		// TODO: Add your initialization logic here
 		Window.AllowUserResizing = true;
+
+		RenderingSystem = new RenderingSystem();
 
 		// Create the world.
 		// Later on this should be part of starting a new game or loading a save file.
@@ -75,11 +75,7 @@ public class Game1 : Game
 
 	protected override void LoadContent()
 	{
-		// Create a new SpriteBatch, which can be used to draw textures.
-		_spriteBatch = new SpriteBatch(GraphicsDevice);
-
-		// TODO: use this.Content to load your game content here
-		_hexagonTexture = Content.Load<Texture2D>("Images/generic_hexagon_64");
+		RenderingSystem.LoadContent(this);
 	}
 
 	protected override void Update(GameTime gameTime)
@@ -97,35 +93,16 @@ public class Game1 : Game
 
 	protected override void Draw(GameTime gameTime)
 	{
-		_graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+		// Background.
+		Graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-		// TODO: Add your drawing code here
-
-		// Mostly a demo. Should be moved into a tile map render system later on.
-		_spriteBatch.Begin();
-		for (var y = 0; y < World.Grid.SizeX; y++)
-		{
-			// This is so even and odd rows get drawn separately, to layer properly.
-			// Later on it should be rewritten to use the overloaded Draw parameter instead.
-			for (var offset = 0; offset < 2; offset++)
-			{
-				for (var x = offset; x < World.Grid.SizeY; x = x + 2)
-				{
-					var texturePos = World.PositionComponents.Get(World.Grid.Grid[x, y]).Position;
-					// Offset from the camera.
-					// Frustum culling could be added later with some math.
-					texturePos += World.PositionComponents.Get(CameraEntity).Position;
-					texturePos = new Vector2((float)Math.Round(texturePos.X, MidpointRounding.ToZero), (float)Math.Round(texturePos.Y, MidpointRounding.ToZero));
-					
-					// To add contrast between tiles in the demo.
-					var color = new Color(x * 10 % 255, y * 10 % 255, 255);
-				
-					_spriteBatch.Draw(_hexagonTexture, texturePos, color);
-				}
-			}
-		}
-
-		_spriteBatch.End();
+		// Tile map.
+		RenderingSystem.RenderMap(this, World);
+		
+		// Things on the map.
+		
+		// UI.
+		
 
 		base.Draw(gameTime);
 	}

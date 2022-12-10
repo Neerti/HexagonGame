@@ -40,21 +40,11 @@ public class InputSystem
 		{
 			movementDirection += -Vector2.UnitX;
 		}
-		
-		// Apply the movement to the camera entity.
-		//ref var cameraPositionComponent = ref game.World.PositionComponents.Get(game.CameraEntity);
-		//cameraPositionComponent.Position += movementDirection * cameraSpeed;
 
 		if (movementDirection != Vector2.Zero)
 		{
 			game.World.PositionComponents.Get(game.World.CameraEntity).Position += movementDirection * cameraSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 		}
-
-
-
-		//Console.WriteLine(cameraPositionComponent.Position);
-
-		//game.World.PositionComponents.Get(game.CameraEntity) += movementDirection * cameraSpeed
 
 	}
 }

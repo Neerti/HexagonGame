@@ -64,3 +64,6 @@ monodroid*.msi
 
 #KDE files
 .directory
+
+#Jetbrains stuff
+.idea/

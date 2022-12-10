@@ -14,7 +14,7 @@ public class Game1 : Game
 	public SpriteBatch SpriteBatch;
 
 	public World World;
-	private InputSystem _inputSystem;
+	public InputSystem InputSystem;
 	public RenderingSystem RenderingSystem;
 	public CameraSystem CameraSystem;
 
@@ -31,8 +31,10 @@ public class Game1 : Game
 		// TODO: Add your initialization logic here
 		Window.AllowUserResizing = true;
 
+		// Systems init.
 		RenderingSystem = new RenderingSystem();
 		CameraSystem = new CameraSystem();
+		InputSystem = new InputSystem();
 
 		// Create the world.
 		// Later on this should be part of starting a new game or loading a save file.
@@ -64,9 +66,6 @@ public class Game1 : Game
 			}
 		}
 
-		// Systems init.
-		_inputSystem = new InputSystem();
-		
 		// Set up a basic camera out of a few components.
 		World.CameraEntity = World.NewEntity();
 		var posComponent = new PositionComponent(position: Vector2.Zero);
@@ -82,7 +81,7 @@ public class Game1 : Game
 
 	protected override void Update(GameTime gameTime)
 	{
-		_inputSystem.PollForInput(this, gameTime);
+		InputSystem.PollForInput(this, gameTime);
 		
 
 		// TODO: Add your update logic here

@@ -1,0 +1,5 @@
+Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
+"/home/neerti/Projects/MonoGame/Hexagon/HexagonGame/Content/Images/ball.png","/home/neerti/Projects/MonoGame/Hexagon/HexagonGame/Content/bin/DesktopGL/Content/Images/ball.xnb","TextureProcessor","Texture2DContent",8368,16469,0.0816399
+"/home/neerti/Projects/MonoGame/Hexagon/HexagonGame/Content/Images/generic_hexagon_64.png","/home/neerti/Projects/MonoGame/Hexagon/HexagonGame/Content/bin/DesktopGL/Content/Images/generic_hexagon_64.xnb","TextureProcessor","Texture2DContent",935,16469,0.0765526
+"/home/neerti/Projects/MonoGame/Hexagon/HexagonGame/Content/Images/hexagon_outline64.png","/home/neerti/Projects/MonoGame/Hexagon/HexagonGame/Content/bin/DesktopGL/Content/Images/hexagon_outline64.xnb","TextureProcessor","Texture2DContent",6797,16469,0.0009055
+"/home/neerti/Projects/MonoGame/Hexagon/HexagonGame/Content/Images/liquid_hexagon_64.png","/home/neerti/Projects/MonoGame/Hexagon/HexagonGame/Content/bin/DesktopGL/Content/Images/liquid_hexagon_64.xnb","TextureProcessor","Texture2DContent",6455,16469,0.0006382

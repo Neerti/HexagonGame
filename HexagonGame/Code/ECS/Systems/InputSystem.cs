@@ -47,7 +47,7 @@ public class InputSystem
 
 		if (movementDirection != Vector2.Zero)
 		{
-			game.World.PositionComponents.Get(game.CameraEntity).Position += movementDirection * cameraSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+			game.World.PositionComponents.Get(game.World.CameraEntity).Position += movementDirection * cameraSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 		}
 
 

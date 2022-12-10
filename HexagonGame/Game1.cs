@@ -17,7 +17,6 @@ public class Game1 : Game
 	private SpriteBatch _spriteBatch;
 
 	public World World;
-	public int CameraEntity;
 	private InputSystem _inputSystem;
 
 	public Game1()
@@ -67,9 +66,9 @@ public class Game1 : Game
 		_inputSystem = new InputSystem();
 		
 		// Set up a basic camera out of a few components.
-		CameraEntity = World.NewEntity();
+		World.CameraEntity = World.NewEntity();
 		var posComponent = new PositionComponent(position: Vector2.Zero);
-		World.PositionComponents.Add(CameraEntity, posComponent);
+		World.PositionComponents.Add(World.CameraEntity, posComponent);
 
 		base.Initialize();
 	}

@@ -25,6 +25,9 @@ public class World
 	// Multiple grids could be used at once, to store different maps, e.g. an underground level, or 
 	// a different planet.
 	public EntityGrid Grid;
+
+	// Entity ID for the game camera.
+	public int CameraEntity;
 	
 	public int NewEntity()
 	{

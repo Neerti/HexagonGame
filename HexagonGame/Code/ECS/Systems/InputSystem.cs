@@ -45,11 +45,16 @@ public class InputSystem
 		//ref var cameraPositionComponent = ref game.World.PositionComponents.Get(game.CameraEntity);
 		//cameraPositionComponent.Position += movementDirection * cameraSpeed;
 
-		game.World.PositionComponents.Get(game.CameraEntity).Position += movementDirection * cameraSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-		
+		if (movementDirection != Vector2.Zero)
+		{
+			game.World.PositionComponents.Get(game.CameraEntity).Position += movementDirection * cameraSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+		}
+
+
+
 		//Console.WriteLine(cameraPositionComponent.Position);
-		
+
 		//game.World.PositionComponents.Get(game.CameraEntity) += movementDirection * cameraSpeed
-		
+
 	}
 }

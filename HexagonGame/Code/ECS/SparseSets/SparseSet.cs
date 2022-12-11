@@ -31,7 +31,7 @@ public class SparseSet<T> : IEnumerable<T>
 	public int Count;
 		
 	/// <summary>
-	/// Maximum capacity for this collection.
+	/// Maximum capacity for the sparse array.
 	/// </summary>
 	public int Max;
 
@@ -53,23 +53,23 @@ public class SparseSet<T> : IEnumerable<T>
 
 	public ref T Get(int index)
 	{
+		if (!Contains(index))
+		{
+			// Would prefer to have return null but that's apparently not an option here.
+			throw new ArgumentException("Index pointed to hole in sparse array.", nameof(index));
+		}
 		return ref Elements[Sparse[index]];
 	}
 
 	public void Add(int index, T element)
 	{
 		// Duplicate indices are not allowed.
+		// Also checks for being out of bounds.
 		if (Contains(index))
 		{
 			return;
 		}
 
-		// Check if out of bounds.
-		if (index > Max || index < 0)
-		{
-			throw new ArgumentOutOfRangeException();
-		}
-			
 		// Add the new element to the end.
 		Elements[Count] = element;
 		Dense[Count] = index;
@@ -110,7 +110,7 @@ public class SparseSet<T> : IEnumerable<T>
 
 	public IEnumerator<T> GetEnumerator()
 	{
-		for (int i = 0; i < Count; i++)
+		for (var i = 0; i < Count; i++)
 		{
 			yield return Elements[i];
 		}

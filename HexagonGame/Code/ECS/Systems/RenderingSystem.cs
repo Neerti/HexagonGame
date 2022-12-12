@@ -32,9 +32,15 @@ public class RenderingSystem
 					// Offset from the camera.
 					// Frustum culling could be added later with some math.
 					texturePos += world.PositionComponents.Get(world.CameraEntity).Position;
-					texturePos = new Vector2((float)Math.Round(texturePos.X, MidpointRounding.ToZero), (float)Math.Round(texturePos.Y, MidpointRounding.ToZero));
+					
+					// Round the camera to avoid subpixeling.
+					texturePos = new Vector2(
+						(float)Math.Round(texturePos.X, MidpointRounding.ToZero),
+						(float)Math.Round(texturePos.Y, MidpointRounding.ToZero)
+						);
 					
 					// To add contrast between tiles in the demo.
+					// Later on it'll check an AppearanceComponent to determine the color and sprite to use.
 					var color = new Color(x * 10 % 255, y * 10 % 255, 255);
 				
 					SpriteBatch.Draw(HexagonTexture, texturePos, color);

@@ -15,7 +15,7 @@ namespace HexagonGame.ECS.Worlds;
 public class World
 {
 	public List<int> Entities = new List<int>();
-	public int EntityTally;
+	public int EntityTally = 1; // This starts at 1, and not 0, so that 0 will always be an empty entity.
 	
 	// In the future, this should be some kind of object to manage this for each component.
 	public SparseSet<TestComponent> TestComponents;

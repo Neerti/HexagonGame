@@ -44,7 +44,7 @@ public class Game1 : Game
 		World.PositionComponents = new SparseSet<PositionComponent>(500000);
 
 		// The map.
-		World.Grid = new EntityGrid(256, 256);
+		World.Grid = new EntityGrid(64, 64);
 		World.Grid.PopulateGrid(World);
 		
 		// These should go elsewhere later.
@@ -88,6 +88,8 @@ public class Game1 : Game
 		
 		//float frameRate = 1 / (float)gameTime.ElapsedGameTime.TotalSeconds;
 		//Console.WriteLine(frameRate);
+		
+		RenderingSystem.CalculateBounds(World);
 
 		base.Update(gameTime);
 	}
@@ -98,7 +100,7 @@ public class Game1 : Game
 		Graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
 		// Tile map.
-		RenderingSystem.RenderMap(this, World);
+		RenderingSystem.RenderTerrain(World);
 		
 		// Things on the map.
 		

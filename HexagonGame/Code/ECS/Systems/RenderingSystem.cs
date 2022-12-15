@@ -35,7 +35,6 @@ public class RenderingSystem
 				var cameraPos = world.PositionComponents.Get(world.CameraEntity).Position;
 				
 				// Round the camera's position to avoid subpixeling.
-				// TODO: Move this to camera movement code so it doesn't need to constantly do this every iteration.
 				cameraPos = new Vector2(
 					(float)Math.Round(cameraPos.X, MidpointRounding.ToZero),
 					(float)Math.Round(cameraPos.Y, MidpointRounding.ToZero)

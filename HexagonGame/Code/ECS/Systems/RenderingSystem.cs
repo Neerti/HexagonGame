@@ -54,11 +54,11 @@ public class RenderingSystem
 				var distanceFromTop = Math.Abs(texturePos.Y - LowestPosition);
 				
 				// Convert the distance to a number between 0.0f and 1.0f.
-				var foo = distanceFromTop / HighestPosition;
+				var normalizedDistance = distanceFromTop / HighestPosition;
 
 				// In MonoGame, 0.0f is the front and 1.0f is the back.
 				// So it needs to be inverted for it to layer properly.
-				var spriteLayer = 1f - foo;
+				var spriteLayer = 1f - normalizedDistance;
 				
 				SpriteBatch.Draw(
 					HexagonTexture, 

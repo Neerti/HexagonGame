@@ -3,6 +3,7 @@ using HexagonGame.ECS.EntityGrids;
 using HexagonGame.ECS.SparseSets;
 using HexagonGame.ECS.Systems;
 using HexagonGame.ECS.Worlds;
+using HexagonGame.MapGeneration;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -42,6 +43,7 @@ public class Game1 : Game
 		
 		// Set up the component holders.
 		World.PositionComponents = new SparseSet<PositionComponent>(500000);
+		World.TileAttributeComponents = new SparseSet<TileAttributeComponent>(500000);
 
 		// The map.
 		World.Grid = new EntityGrid(64, 64);
@@ -63,8 +65,14 @@ public class Game1 : Game
 					newY += SpriteHeight / 2;
 				}
 				World.PositionComponents.Add(tileEntity, new PositionComponent(newX, newY));
+				
+				World.TileAttributeComponents.Add(tileEntity, new TileAttributeComponent());
 			}
 		}
+		
+		// Generate the map.
+		var mapGenerator = new MapGenerator(0);
+		mapGenerator.ApplyNoise(World, World.Grid);
 
 		// Set up a basic camera out of a few components.
 		World.CameraEntity = World.NewEntity();
@@ -82,12 +90,6 @@ public class Game1 : Game
 	protected override void Update(GameTime gameTime)
 	{
 		InputSystem.PollForInput(this, gameTime);
-		
-
-		// TODO: Add your update logic here
-		
-		//float frameRate = 1 / (float)gameTime.ElapsedGameTime.TotalSeconds;
-		//Console.WriteLine(frameRate);
 		
 		RenderingSystem.CalculateBounds(World);
 

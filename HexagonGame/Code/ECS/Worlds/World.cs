@@ -18,8 +18,8 @@ public class World
 	public int EntityTally = 1; // This starts at 1, and not 0, so that 0 will always be an empty entity.
 	
 	// In the future, this should be some kind of object to manage this for each component.
-	public SparseSet<TestComponent> TestComponents;
 	public SparseSet<PositionComponent> PositionComponents;
+	public SparseSet<TileAttributeComponent> TileAttributeComponents;
 
 	// EntityGrids are used to store map data.
 	// Multiple grids could be used at once, to store different maps, e.g. an underground level, or 

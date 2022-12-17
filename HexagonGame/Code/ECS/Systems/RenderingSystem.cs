@@ -44,7 +44,57 @@ public class RenderingSystem
 				
 				// To add contrast between tiles in the demo.
 				// Later on it'll check an AppearanceComponent to determine the color and sprite to use.
-				var textureColor = new Color(x * 10 % 255, y * 10 % 255, 255);
+				//var textureColor = new Color(x * 10 % 255, y * 10 % 255, 255);
+				var tileHeight = world.TileAttributeComponents.Get(world.Grid.Grid[x, y]).Height;
+
+				var textureColor = Color.Black;
+				var seaOffset = 0.20f;
+				if (tileHeight > seaOffset)
+				{
+					textureColor = new Color((int)(255 * tileHeight), 124, 124);
+				}
+				else
+				{
+					textureColor = new Color(0, 0, (int)(255 * -tileHeight));
+				}
+
+				
+				
+				
+				/*
+									// This is super ugly and hopefully temporary.
+					const float seaLevelOffset = 0.1f;
+					if(value > (0.25f + seaLevelOffset))
+					{
+						chosen_terrain_type = TerrainKinds.Snow;
+					}
+					else if(value > (0.20f + seaLevelOffset))
+					{
+						chosen_terrain_type = TerrainKinds.Rock;
+					}
+					else if(value > (0.15f + seaLevelOffset))
+					{
+						chosen_terrain_type = TerrainKinds.Forest;
+					}
+					else if(value > (0.05f + seaLevelOffset))
+					{
+						chosen_terrain_type = TerrainKinds.Grass;
+					}
+					else if(value > (0f + seaLevelOffset))
+					{
+						chosen_terrain_type = TerrainKinds.BeachSand;
+					}
+					else if(value > (-0.15f + seaLevelOffset))
+					{
+						chosen_terrain_type = TerrainKinds.ShallowSaltWater;
+					}
+					else
+					{
+						chosen_terrain_type = TerrainKinds.DeepSaltWater;
+					}
+					tile.Terrain = Singleton.AllTerrains[chosen_terrain_type];
+				*/
+				
 				
 
 				// Textures are layered based on their Y position.

@@ -1,4 +1,5 @@
-﻿using HexagonGame.ECS.Components;
+﻿using System;
+using HexagonGame.ECS.Components;
 using HexagonGame.ECS.EntityGrids;
 using HexagonGame.ECS.SparseSets;
 using HexagonGame.ECS.Systems;
@@ -12,7 +13,6 @@ namespace HexagonGame;
 public class Game1 : Game
 {
 	public GraphicsDeviceManager Graphics;
-	public SpriteBatch SpriteBatch;
 
 	public World World;
 	public InputSystem InputSystem;
@@ -22,7 +22,6 @@ public class Game1 : Game
 
 	public Game1()
 	{
-		Graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
 		IsFixedTimeStep = false;
@@ -30,8 +29,8 @@ public class Game1 : Game
 
 	protected override void Initialize()
 	{
-		// TODO: Add your initialization logic here
 		Window.AllowUserResizing = true;
+		Window.Title = "Hexagon";
 
 		// Systems init.
 		RenderingSystem = new RenderingSystem();
@@ -42,13 +41,16 @@ public class Game1 : Game
 		// Create the world.
 		// Later on this should be part of starting a new game or loading a save file.
 		World = new World();
+
+		var mapSize = (int) Math.Pow(2, 10);
 		
 		// Set up the component holders.
-		World.PositionComponents = new SparseSet<PositionComponent>(500000);
-		World.TileAttributeComponents = new SparseSet<TileAttributeComponent>(500000);
+		// Might be good to add auto-resizing to the sparse sets.
+		World.PositionComponents = new SparseSet<PositionComponent>(mapSize * mapSize + 1000);
+		World.TileAttributeComponents = new SparseSet<TileAttributeComponent>(mapSize * mapSize + 1000);
 
 		// The map.
-		World.Grid = new EntityGrid(64, 64);
+		World.Grid = new EntityGrid(mapSize, mapSize);
 		World.Grid.PopulateGrid(World);
 
 		for (var i = 0; i < World.Grid.SizeX; i++)
@@ -106,7 +108,6 @@ public class Game1 : Game
 		// UI.
 		UISystem.DrawDebugUI(World, this, gameTime);
 		
-
 		base.Draw(gameTime);
 	}
 }

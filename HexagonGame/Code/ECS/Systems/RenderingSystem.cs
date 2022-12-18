@@ -24,9 +24,21 @@ public class RenderingSystem
 	{
 		var viewportBounds = game.GraphicsDevice.Viewport.Bounds;
 		var cameraPos = world.PositionComponents.Get(world.CameraEntity).Position;
+		
+		// Round the camera's position to avoid subpixeling.
+		cameraPos = new Vector2(
+			(float)Math.Round(cameraPos.X, MidpointRounding.ToZero),
+			(float)Math.Round(cameraPos.Y, MidpointRounding.ToZero)
+		);
 
-		var topLeftCorner = cameraPos + new Vector2(-200, -200);
-		var bottomRightCorner = new Vector2(cameraPos.X + viewportBounds.Width + 200, cameraPos.Y + viewportBounds.Height + 200);
+		var topLeftCorner = new Vector2(
+			cameraPos.X + -200, 
+			cameraPos.Y + -200
+			);
+		var bottomRightCorner = new Vector2(
+			cameraPos.X + viewportBounds.Width + 200,
+			cameraPos.Y + viewportBounds.Height + 200
+			);
 
 		var topLeftCornerTile = world.Grid.VectorToTileCoordinate(topLeftCorner);
 		var bottomRightCornerTile = world.Grid.VectorToTileCoordinate(bottomRightCorner);
@@ -39,15 +51,10 @@ public class RenderingSystem
 				// Get the position component.
 				var texturePos = world.PositionComponents.Get(world.Grid.Grid[x, y]).Position;
 
-				// Round the camera's position to avoid subpixeling.
-				cameraPos = new Vector2(
-					(float)Math.Round(cameraPos.X, MidpointRounding.ToZero),
-					(float)Math.Round(cameraPos.Y, MidpointRounding.ToZero)
-				);
-				
 				// Offset from the camera.
 				texturePos -= cameraPos;
 
+				// Debug coloring.
 				var textureColor = Color.White;
 				if (x % 10 == 0)
 				{

@@ -18,6 +18,7 @@ public class Game1 : Game
 	public InputSystem InputSystem;
 	public RenderingSystem RenderingSystem;
 	public CameraSystem CameraSystem;
+	public UISystem UISystem;
 
 	public Game1()
 	{
@@ -36,6 +37,7 @@ public class Game1 : Game
 		RenderingSystem = new RenderingSystem();
 		CameraSystem = new CameraSystem();
 		InputSystem = new InputSystem();
+		UISystem = new UISystem();
 
 		// Create the world.
 		// Later on this should be part of starting a new game or loading a save file.
@@ -81,6 +83,7 @@ public class Game1 : Game
 	protected override void LoadContent()
 	{
 		RenderingSystem.LoadContent(this);
+		UISystem.Initialize(this);
 	}
 
 	protected override void Update(GameTime gameTime)
@@ -103,6 +106,7 @@ public class Game1 : Game
 		// Things on the map.
 		
 		// UI.
+		UISystem.DrawDebugUI(World, this, gameTime);
 		
 
 		base.Draw(gameTime);

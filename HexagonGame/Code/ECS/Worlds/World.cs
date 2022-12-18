@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using HexagonGame.ECS.Components;
 using HexagonGame.ECS.EntityGrids;
@@ -14,7 +15,7 @@ namespace HexagonGame.ECS.Worlds;
 /// </summary>
 public class World
 {
-	public List<int> Entities = new List<int>();
+	public List<int> Entities = new();
 	public int EntityTally = 1; // This starts at 1, and not 0, so that 0 will always be an empty entity.
 	
 	// In the future, this should be some kind of object to manage this for each component.

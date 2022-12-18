@@ -20,45 +20,32 @@ public class RenderingSystem
 		SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 	}
 
-	public (ValueTuple<int, int> topLeftCorner, ValueTuple<int, int> bottomRightCorner) RectangleToGrid(World world, Rectangle rect)
+	public void RenderTerrain(World world, Game1 game)
 	{
+		var viewportBounds = game.GraphicsDevice.Viewport.Bounds;
 		var cameraPos = world.PositionComponents.Get(world.CameraEntity).Position;
 
 		var topLeftCorner = cameraPos + new Vector2(-200, -200);
-		var bottomRightCorner = new Vector2(cameraPos.X + rect.Width + 200, cameraPos.Y + rect.Height + 200);
+		var bottomRightCorner = new Vector2(cameraPos.X + viewportBounds.Width + 200, cameraPos.Y + viewportBounds.Height + 200);
 
 		var topLeftCornerTile = world.Grid.VectorToTileCoordinate(topLeftCorner);
 		var bottomRightCornerTile = world.Grid.VectorToTileCoordinate(bottomRightCorner);
 		
-		return (topLeftCornerTile, bottomRightCornerTile);
-
-	}
-
-	public void RenderTerrain(World world, Game1 game)
-	{
-		var viewportBounds = game.GraphicsDevice.Viewport.Bounds;
-		var corners = RectangleToGrid(world, viewportBounds);
-		
-		
 		SpriteBatch.Begin(SpriteSortMode.BackToFront);
-		// Later on, it will be better to iterate over a rectangular 'slice' of the grid instead of the whole grid. 
-		for (var x = corners.topLeftCorner.Item1; x < corners.bottomRightCorner.Item1; x++)
+		for (var x = topLeftCornerTile.xCoordinate; x < bottomRightCornerTile.xCoordinate; x++)
 		{
-			for (var y = corners.topLeftCorner.Item2; y < corners.bottomRightCorner.Item2; y++)
+			for (var y = topLeftCornerTile.yCoordinate; y < bottomRightCornerTile.yCoordinate; y++)
 			{
 				// Get the position component.
 				var texturePos = world.PositionComponents.Get(world.Grid.Grid[x, y]).Position;
-				
-				// Offset from the camera.
-				// Frustum culling could be added later with some math.
-				var cameraPos = world.PositionComponents.Get(world.CameraEntity).Position;
-				
+
 				// Round the camera's position to avoid subpixeling.
 				cameraPos = new Vector2(
 					(float)Math.Round(cameraPos.X, MidpointRounding.ToZero),
 					(float)Math.Round(cameraPos.Y, MidpointRounding.ToZero)
 				);
 				
+				// Offset from the camera.
 				texturePos -= cameraPos;
 
 				var textureColor = Color.White;

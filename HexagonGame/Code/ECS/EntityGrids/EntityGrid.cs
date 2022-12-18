@@ -78,8 +78,8 @@ public struct EntityGrid
 	[CanBeNull]
 	public (int xCoordinate, int yCoordinate) VectorToTileCoordinate(Vector2 vector)
 	{
-		var x = (int) Math.Ceiling(TileSpriteWidth * vector.X);
-		var y = (int) Math.Ceiling(TileSpriteHeight * vector.Y);
+		var x = (int) Math.Ceiling(vector.X / TileSpriteWidth);
+		var y = (int) Math.Ceiling(vector.Y / TileSpriteHeight);
 		if (IsValidCoordinate(x, y))
 		{
 			return (x, y);

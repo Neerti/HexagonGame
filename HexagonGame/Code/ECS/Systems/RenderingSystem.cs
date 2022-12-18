@@ -111,30 +111,5 @@ public class RenderingSystem
 		SpriteBatch.End();
 	}
 
-	/// <summary>
-	/// Finds the highest and lowest position coordinates in use.
-	/// </summary>
-	/// <param name="world">The ECS World object in use.</param>
-	public void CalculateBounds(World world)
-	{
-		HighestPosition = 0f;
-		LowestPosition = 0f;
-		
-		// For now this only handles Y coordinate things, as that's all that is needed.
-		// If needed, X coordinates can also be added.
-		for (var i = 0; i < world.PositionComponents.Count; i++)
-		{
-			var component = world.PositionComponents.Elements[i];
-			if (component.Position.Y > HighestPosition)
-			{
-				HighestPosition = component.Position.Y;
-			}
-			else if (component.Position.Y < LowestPosition)
-			{
-				LowestPosition = component.Position.Y;
-			}
-		}
-	}
-	
-	
+
 }

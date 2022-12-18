@@ -89,8 +89,6 @@ public class Game1 : Game
 	protected override void Update(GameTime gameTime)
 	{
 		InputSystem.PollForInput(this, gameTime);
-		
-		RenderingSystem.CalculateBounds(World);
 
 		base.Update(gameTime);
 	}

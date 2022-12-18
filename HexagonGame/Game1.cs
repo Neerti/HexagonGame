@@ -48,21 +48,17 @@ public class Game1 : Game
 		// The map.
 		World.Grid = new EntityGrid(64, 64);
 		World.Grid.PopulateGrid(World);
-		
-		// These should go elsewhere later.
-		var SpriteWidth = 49;
-		var SpriteHeight = 32;
 
 		for (var i = 0; i < World.Grid.SizeX; i++)
 		{
 			for (var j = 0; j < World.Grid.SizeY; j++)
 			{
 				var tileEntity = World.Grid.Grid[i, j];
-				var newX = i * SpriteWidth;
-				var newY = j * SpriteHeight;
+				var newX = i * EntityGrid.TileSpriteWidth;
+				var newY = j * EntityGrid.TileSpriteHeight;
 				if ((i & 1) == 1) // Odd numbers are moved down by half.
 				{
-					newY += SpriteHeight / 2;
+					newY += EntityGrid.TileSpriteHeight / 2;
 				}
 				World.PositionComponents.Add(tileEntity, new PositionComponent(newX, newY));
 				
@@ -102,7 +98,7 @@ public class Game1 : Game
 		Graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
 		// Tile map.
-		RenderingSystem.RenderTerrain(World);
+		RenderingSystem.RenderTerrain(World, this);
 		
 		// Things on the map.
 		

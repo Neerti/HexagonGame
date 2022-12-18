@@ -23,22 +23,22 @@ public class InputSystem
 		// TODO: Keybinding system so people can rebind keys.
 		if (Keyboard.GetState().IsKeyDown(Keys.W))
 		{
-			movementDirection += Vector2.UnitY;
+			movementDirection += -Vector2.UnitY;
 		}
 
 		else if (Keyboard.GetState().IsKeyDown(Keys.S))
 		{
-			movementDirection += -Vector2.UnitY;
+			movementDirection += Vector2.UnitY;
 		}
 		
 		if (Keyboard.GetState().IsKeyDown(Keys.A))
 		{
-			movementDirection += Vector2.UnitX;
+			movementDirection += -Vector2.UnitX;
 		}
 		
 		else if (Keyboard.GetState().IsKeyDown(Keys.D))
 		{
-			movementDirection += -Vector2.UnitX;
+			movementDirection += Vector2.UnitX;
 		}
 		
 		

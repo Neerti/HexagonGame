@@ -1,4 +1,5 @@
 using System;
+using HexagonGame.ECS.EntityGrids;
 using HexagonGame.ECS.Worlds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,8 +20,43 @@ public class RenderingSystem
 		SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 	}
 
-	public void RenderTerrain(World world)
+	public void RectangleToGrid(World world, Rectangle rect)
 	{
+		rect.Inflate(rect.Width * 0.2f, rect.Height * 0.2f);
+
+		var cameraPos = world.PositionComponents.Get(world.CameraEntity).Position;
+
+		var gridRect = new Rectangle(
+			(int) cameraPos.X, (int) cameraPos.Y,
+			world.Grid.SizeX * EntityGrid.TileSpriteWidth,
+			world.Grid.SizeY * EntityGrid.TileSpriteHeight
+		);
+		
+		Console.WriteLine(cameraPos);
+		var foo = world.Grid.VectorToTileCoordinate(cameraPos);
+		Console.WriteLine(foo);
+		
+		var intersectRect = Rectangle.Intersect(gridRect, rect);
+		Console.WriteLine(intersectRect);
+
+		var topLeftCorner = new Vector2(intersectRect.Top, intersectRect.Left);
+		var bottomRightCorner = new Vector2(intersectRect.Bottom, intersectRect.Right);
+		Console.WriteLine(topLeftCorner);
+		
+
+		var gridWidth = rect.Width / EntityGrid.TileSpriteWidth;
+		var gridHeight = rect.Height / EntityGrid.TileSpriteHeight;
+
+		var gridStartX = Math.Abs(rect.X) / EntityGrid.TileSpriteWidth;
+		var gridStartY = Math.Abs(rect.Y) / EntityGrid.TileSpriteWidth;
+	}
+
+	public void RenderTerrain(World world, Game1 game)
+	{
+		var viewportBounds = game.GraphicsDevice.Viewport.Bounds;
+		RectangleToGrid(world, viewportBounds);
+		
+		
 		SpriteBatch.Begin(SpriteSortMode.BackToFront);
 		// Later on, it will be better to iterate over a rectangular 'slice' of the grid instead of the whole grid. 
 		for (var x = 0; x < world.Grid.SizeX; x++)
@@ -40,62 +76,21 @@ public class RenderingSystem
 					(float)Math.Round(cameraPos.Y, MidpointRounding.ToZero)
 				);
 				
-				texturePos += cameraPos;
+				texturePos -= cameraPos;
 				
 				// To add contrast between tiles in the demo.
 				// Later on it'll check an AppearanceComponent to determine the color and sprite to use.
 				//var textureColor = new Color(x * 10 % 255, y * 10 % 255, 255);
 				var tileHeight = world.TileAttributeComponents.Get(world.Grid.Grid[x, y]).Height;
 
-				var textureColor = Color.Black;
-				var seaOffset = 0.20f;
-				if (tileHeight > seaOffset)
+				var textureColor = Color.White;
+				if (x == 0 && y == 0)
 				{
-					textureColor = new Color((int)(255 * tileHeight), 124, 124);
+					textureColor = Color.Red;
 				}
-				else
-				{
-					textureColor = new Color(0, 0, (int)(255 * -tileHeight));
-				}
+				
 
-				
-				
-				
-				/*
-									// This is super ugly and hopefully temporary.
-					const float seaLevelOffset = 0.1f;
-					if(value > (0.25f + seaLevelOffset))
-					{
-						chosen_terrain_type = TerrainKinds.Snow;
-					}
-					else if(value > (0.20f + seaLevelOffset))
-					{
-						chosen_terrain_type = TerrainKinds.Rock;
-					}
-					else if(value > (0.15f + seaLevelOffset))
-					{
-						chosen_terrain_type = TerrainKinds.Forest;
-					}
-					else if(value > (0.05f + seaLevelOffset))
-					{
-						chosen_terrain_type = TerrainKinds.Grass;
-					}
-					else if(value > (0f + seaLevelOffset))
-					{
-						chosen_terrain_type = TerrainKinds.BeachSand;
-					}
-					else if(value > (-0.15f + seaLevelOffset))
-					{
-						chosen_terrain_type = TerrainKinds.ShallowSaltWater;
-					}
-					else
-					{
-						chosen_terrain_type = TerrainKinds.DeepSaltWater;
-					}
-					tile.Terrain = Singleton.AllTerrains[chosen_terrain_type];
-				*/
-				
-				
+
 
 				// Textures are layered based on their Y position.
 				// Things towards the bottom of the screen need to layer over things towards the top.

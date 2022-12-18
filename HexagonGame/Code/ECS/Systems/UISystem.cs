@@ -32,7 +32,7 @@ public class UISystem
 		SpriteBatch.DrawString(Font, $"Entities: {world.EntityTally}", new Vector2(10, 40), Color.Black);
 		
 		// Map.
-		SpriteBatch.DrawString(Font, $"Map Size: {world.Grid.SizeX}x{world.Grid.SizeY}  ({world.Grid.SizeX*world.Grid.SizeY} tiles)", new Vector2(10, 55), Color.Black);
+		SpriteBatch.DrawString(Font, $"Map Size: {world.Grid.SizeX}x{world.Grid.SizeY}  ({world.Grid.SizeX*world.Grid.SizeY} tiles) {world.Calendar}", new Vector2(10, 55), Color.Black);
 
 		SpriteBatch.End();
 	}

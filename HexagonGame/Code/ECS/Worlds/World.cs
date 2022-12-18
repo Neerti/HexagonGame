@@ -26,6 +26,8 @@ public class World
 	// a different planet.
 	public EntityGrid Grid;
 
+	public DateTime Calendar;
+
 	// Entity ID for the game camera.
 	public int CameraEntity;
 	

@@ -80,6 +80,8 @@ public class Game1 : Game
 		var posComponent = new PositionComponent(position: Vector2.Zero);
 		World.PositionComponents.Add(World.CameraEntity, posComponent);
 
+		World.Calendar = new DateTime();
+
 		base.Initialize();
 	}
 

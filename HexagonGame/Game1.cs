@@ -22,6 +22,7 @@ public class Game1 : Game
 
 	public Game1()
 	{
+		Graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
 		IsFixedTimeStep = false;

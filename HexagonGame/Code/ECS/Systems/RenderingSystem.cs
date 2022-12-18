@@ -20,48 +20,31 @@ public class RenderingSystem
 		SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 	}
 
-	public void RectangleToGrid(World world, Rectangle rect)
+	public (ValueTuple<int, int> topLeftCorner, ValueTuple<int, int> bottomRightCorner) RectangleToGrid(World world, Rectangle rect)
 	{
-		rect.Inflate(rect.Width * 0.2f, rect.Height * 0.2f);
-
 		var cameraPos = world.PositionComponents.Get(world.CameraEntity).Position;
 
-		var gridRect = new Rectangle(
-			(int) cameraPos.X, (int) cameraPos.Y,
-			world.Grid.SizeX * EntityGrid.TileSpriteWidth,
-			world.Grid.SizeY * EntityGrid.TileSpriteHeight
-		);
-		
-		Console.WriteLine(cameraPos);
-		var foo = world.Grid.VectorToTileCoordinate(cameraPos);
-		Console.WriteLine(foo);
-		
-		var intersectRect = Rectangle.Intersect(gridRect, rect);
-		Console.WriteLine(intersectRect);
+		var topLeftCorner = cameraPos + new Vector2(-200, -200);
+		var bottomRightCorner = new Vector2(cameraPos.X + rect.Width + 200, cameraPos.Y + rect.Height + 200);
 
-		var topLeftCorner = new Vector2(intersectRect.Top, intersectRect.Left);
-		var bottomRightCorner = new Vector2(intersectRect.Bottom, intersectRect.Right);
-		Console.WriteLine(topLeftCorner);
+		var topLeftCornerTile = world.Grid.VectorToTileCoordinate(topLeftCorner);
+		var bottomRightCornerTile = world.Grid.VectorToTileCoordinate(bottomRightCorner);
 		
+		return (topLeftCornerTile, bottomRightCornerTile);
 
-		var gridWidth = rect.Width / EntityGrid.TileSpriteWidth;
-		var gridHeight = rect.Height / EntityGrid.TileSpriteHeight;
-
-		var gridStartX = Math.Abs(rect.X) / EntityGrid.TileSpriteWidth;
-		var gridStartY = Math.Abs(rect.Y) / EntityGrid.TileSpriteWidth;
 	}
 
 	public void RenderTerrain(World world, Game1 game)
 	{
 		var viewportBounds = game.GraphicsDevice.Viewport.Bounds;
-		RectangleToGrid(world, viewportBounds);
+		var corners = RectangleToGrid(world, viewportBounds);
 		
 		
 		SpriteBatch.Begin(SpriteSortMode.BackToFront);
 		// Later on, it will be better to iterate over a rectangular 'slice' of the grid instead of the whole grid. 
-		for (var x = 0; x < world.Grid.SizeX; x++)
+		for (var x = corners.topLeftCorner.Item1; x < corners.bottomRightCorner.Item1; x++)
 		{
-			for (var y = 0; y < world.Grid.SizeY; y++)
+			for (var y = corners.topLeftCorner.Item2; y < corners.bottomRightCorner.Item2; y++)
 			{
 				// Get the position component.
 				var texturePos = world.PositionComponents.Get(world.Grid.Grid[x, y]).Position;
@@ -79,10 +62,23 @@ public class RenderingSystem
 				texturePos -= cameraPos;
 
 				var textureColor = Color.White;
+				if (x % 10 == 0)
+				{
+					textureColor = Color.Blue;
+					if (y % 10 == 0)
+					{
+						textureColor = Color.Yellow;
+					}
+				}
+				else if (y % 10 == 0)
+				{
+					textureColor = Color.Green;
+				}
 				if (x == 0 && y == 0)
 				{
 					textureColor = Color.Red;
 				}
+				
 
 				var step = 1f / world.Grid.SizeY;
 				

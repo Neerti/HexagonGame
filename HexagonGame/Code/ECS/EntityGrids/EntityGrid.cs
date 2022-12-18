@@ -74,17 +74,15 @@ public struct EntityGrid
 	{
 		return TileCoordinateToVector(hex.X, hex.Y);
 	}
-
-	[CanBeNull]
+	
 	public (int xCoordinate, int yCoordinate) VectorToTileCoordinate(Vector2 vector)
 	{
 		var x = (int) Math.Ceiling(vector.X / TileSpriteWidth);
 		var y = (int) Math.Ceiling(vector.Y / TileSpriteHeight);
-		if (IsValidCoordinate(x, y))
-		{
-			return (x, y);
-		}
+
+		x = Math.Clamp(x, 0, SizeX);
+		y = Math.Clamp(y, 0, SizeY);
 		
-		return (-1, -1); // I hate this.
+		return (x, y);
 	}
 }

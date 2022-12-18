@@ -9,6 +9,8 @@ namespace HexagonGame.ECS.Systems;
 /// </summary>
 public class InputSystem
 {
+	public KeyboardState OldKeyboardState = new KeyboardState();
+	
 	public void PollForInput(Game1 game, GameTime gameTime)
 	{
 		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
@@ -49,5 +51,29 @@ public class InputSystem
 			game.World.PositionComponents.Get(game.World.CameraEntity).Position += movementDirection * cameraSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 		}
 
+		if (IsKeyJustDown(Keys.Space))
+		{
+			game.Paused = !game.Paused;
+		}
+
+		if (IsKeyJustDown(Keys.OemPlus))
+		{
+			game.TickSpeedIndex = Math.Min(++game.TickSpeedIndex, game.TickSpeedOptions.Length - 1);
+			game.TickDelay = game.TickSpeedOptions[game.TickSpeedIndex];
+		}
+		
+		if (IsKeyJustDown(Keys.OemMinus))
+		{
+			game.TickSpeedIndex = Math.Max(--game.TickSpeedIndex, 0);
+			game.TickDelay = game.TickSpeedOptions[game.TickSpeedIndex];
+		}
+
+		OldKeyboardState = Keyboard.GetState();
+
+	}
+
+	public bool IsKeyJustDown(Keys key)
+	{
+		return Keyboard.GetState().IsKeyDown(key) && OldKeyboardState.IsKeyUp(key);
 	}
 }

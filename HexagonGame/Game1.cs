@@ -15,10 +15,18 @@ public class Game1 : Game
 	public GraphicsDeviceManager Graphics;
 
 	public World World;
+	
 	public InputSystem InputSystem;
 	public RenderingSystem RenderingSystem;
 	public CameraSystem CameraSystem;
 	public UISystem UISystem;
+	public TimeSystem TimeSystem;
+
+	public bool Paused = false;
+	public TimeSpan FractionalTick;
+	public float TickDelay = 1f;
+	public float[] TickSpeedOptions = {2f, 1f, 0.5f, 0.1f, 0.01f};
+	public int TickSpeedIndex = 1;
 
 	public Game1()
 	{
@@ -38,6 +46,7 @@ public class Game1 : Game
 		CameraSystem = new CameraSystem();
 		InputSystem = new InputSystem();
 		UISystem = new UISystem();
+		TimeSystem = new TimeSystem();
 
 		// Create the world.
 		// Later on this should be part of starting a new game or loading a save file.
@@ -94,6 +103,30 @@ public class Game1 : Game
 	protected override void Update(GameTime gameTime)
 	{
 		InputSystem.PollForInput(this, gameTime);
+
+		if (!Paused)
+		{
+			var oldCalendar = World.Calendar;
+			// Every 'tick' advances the in-game time by an hour.
+			TimeSystem.Tick(this, gameTime);
+			if (World.Calendar.Day != oldCalendar.Day)
+			{
+				// Daily things go here.
+				Console.WriteLine("New day!");
+			}
+
+			if (World.Calendar.Month != oldCalendar.Month)
+			{
+				// Monthly things go here.
+				Console.WriteLine("New month!");
+			}
+
+			if (World.Calendar.Year != oldCalendar.Year)
+			{
+				// Annual things go here.
+				Console.WriteLine("New year!");
+			}
+		}
 
 		base.Update(gameTime);
 	}

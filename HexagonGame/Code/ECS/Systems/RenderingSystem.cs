@@ -77,33 +77,22 @@ public class RenderingSystem
 				);
 				
 				texturePos -= cameraPos;
-				
-				// To add contrast between tiles in the demo.
-				// Later on it'll check an AppearanceComponent to determine the color and sprite to use.
-				//var textureColor = new Color(x * 10 % 255, y * 10 % 255, 255);
-				var tileHeight = world.TileAttributeComponents.Get(world.Grid.Grid[x, y]).Height;
 
 				var textureColor = Color.White;
 				if (x == 0 && y == 0)
 				{
 					textureColor = Color.Red;
 				}
+
+				var step = 1f / world.Grid.SizeY;
 				
-
-
-
-				// Textures are layered based on their Y position.
-				// Things towards the bottom of the screen need to layer over things towards the top.
+				var spriteLayer = step * y;
+				if ((x & 1) == 1) // Odd tiles are moved down half a step.
+				{
+					spriteLayer += step / 2;
+				}
 				
-				// Calculate how far a given position is from the lowest Y value used.
-				var distanceFromTop = Math.Abs(texturePos.Y - LowestPosition);
-				
-				// Convert the distance to a number between 0.0f and 1.0f.
-				var normalizedDistance = distanceFromTop / HighestPosition;
-
-				// In MonoGame, 0.0f is the front and 1.0f is the back.
-				// So it needs to be inverted for it to layer properly.
-				var spriteLayer = 1f - normalizedDistance;
+				spriteLayer = 1 - spriteLayer;
 				
 				SpriteBatch.Draw(
 					HexagonTexture, 

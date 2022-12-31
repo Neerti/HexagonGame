@@ -58,11 +58,14 @@ public class Game1 : Game
 		// Might be good to add auto-resizing to the sparse sets.
 		World.PositionComponents = new SparseSet<PositionComponent>(mapSize * mapSize + 1000);
 		World.TileAttributeComponents = new SparseSet<TileAttributeComponent>(mapSize * mapSize + 1000);
+		World.AppearanceComponents = new SparseSet<AppearanceComponent>(mapSize * mapSize + 1000);
 
 		// The map.
 		World.Grid = new EntityGrid(mapSize, mapSize);
 		World.Grid.PopulateGrid(World);
-
+		
+		var hexagonTexture = Content.Load<Texture2D>("Images/generic_hexagon_64");
+		
 		for (var i = 0; i < World.Grid.SizeX; i++)
 		{
 			for (var j = 0; j < World.Grid.SizeY; j++)
@@ -77,6 +80,27 @@ public class Game1 : Game
 				World.PositionComponents.Add(tileEntity, new PositionComponent(newX, newY));
 				
 				World.TileAttributeComponents.Add(tileEntity, new TileAttributeComponent());
+
+				// Debug coloring.
+				var textureColor = Color.White;
+				if (i % 10 == 0)
+				{
+					textureColor = Color.Blue;
+					if (j % 10 == 0)
+					{
+						textureColor = Color.Yellow;
+					}
+				}
+				else if (j % 10 == 0)
+				{
+					textureColor = Color.Green;
+				}
+				if (i == 0 && j == 0)
+				{
+					textureColor = Color.Red;
+				}
+				
+				World.AppearanceComponents.Add(tileEntity, new AppearanceComponent(hexagonTexture, textureColor));
 			}
 		}
 		

@@ -21,6 +21,7 @@ public class World
 	// In the future, this should be some kind of object to manage this for each component.
 	public SparseSet<PositionComponent> PositionComponents;
 	public SparseSet<TileAttributeComponent> TileAttributeComponents;
+	public SparseSet<AppearanceComponent> AppearanceComponents;
 
 	// EntityGrids are used to store map data.
 	// Multiple grids could be used at once, to store different maps, e.g. an underground level, or 

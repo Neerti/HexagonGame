@@ -8,7 +8,6 @@ namespace HexagonGame.ECS.Systems;
 
 public class RenderingSystem
 {
-	public Texture2D HexagonTexture;
 	public SpriteBatch SpriteBatch;
 
 	public float HighestPosition;
@@ -16,7 +15,6 @@ public class RenderingSystem
 
 	public void LoadContent(Game1 game)
 	{
-		HexagonTexture = game.Content.Load<Texture2D>("Images/generic_hexagon_64");
 		SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 	}
 
@@ -60,28 +58,10 @@ public class RenderingSystem
     
             		// Offset from the camera.
             		texturePos -= cameraPos;
-    
-            		// Debug coloring.
-            		var textureColor = Color.White;
-            		if (x % 10 == 0)
-            		{
-            			textureColor = Color.Blue;
-            			if (y % 10 == 0)
-            			{
-            				textureColor = Color.Yellow;
-            			}
-            		}
-            		else if (y % 10 == 0)
-            		{
-            			textureColor = Color.Green;
-            		}
-            		if (x == 0 && y == 0)
-            		{
-            			textureColor = Color.Red;
-            		}
-            		
-    
-            		var step = 1f / world.Grid.SizeY;
+
+                    var appearanceComponent = world.AppearanceComponents.Get(world.Grid.Grid[x, y, z]);
+
+                    var step = 1f / world.Grid.SizeY;
             		
             		var spriteLayer = step * y;
             		if ((x & 1) == 1) // Odd tiles are moved down half a step.
@@ -92,10 +72,10 @@ public class RenderingSystem
             		spriteLayer = 1 - spriteLayer;
             		
             		SpriteBatch.Draw(
-            			HexagonTexture, 
+	                    appearanceComponent.SpriteTexture, 
             			texturePos,
             			null,
-            			textureColor,
+	                    appearanceComponent.SpriteColor,
             			0f,
             			Vector2.Zero,
             			Vector2.One,

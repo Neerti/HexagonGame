@@ -26,7 +26,7 @@ public class InputSystem
 		// Click-drag camera movement code adapted from code written by "AlienBuchner" at https://godotengine.org/qa/46892/would-map-navigation-camera-with-middle-mouse#a52576.
 		if (IsMiddleMouseButtonJustDown())
 		{
-			Mouse.SetCursor(MouseCursor.Crosshair);
+			Mouse.SetCursor(MouseCursor.SizeAll);
 			FixedTogglePoint = Mouse.GetState().Position.ToVector2();
 		}
 

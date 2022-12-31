@@ -49,7 +49,7 @@ public class RenderingSystem
 			for (var y = topLeftCornerTile.yCoordinate; y < bottomRightCornerTile.yCoordinate; y++)
 			{
 				// Get the position component.
-				var texturePos = world.PositionComponents.Get(world.Grid.Grid[x, y]).Position;
+				var texturePos = world.PositionComponents.Get(world.Grid.Grid[x, y, EntityGrid.TerrainLayer]).Position;
 
 				// Offset from the camera.
 				texturePos -= cameraPos;

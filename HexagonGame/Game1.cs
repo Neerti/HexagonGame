@@ -67,7 +67,7 @@ public class Game1 : Game
 		{
 			for (var j = 0; j < World.Grid.SizeY; j++)
 			{
-				var tileEntity = World.Grid.Grid[i, j];
+				var tileEntity = World.Grid.Grid[i, j, EntityGrid.TerrainLayer];
 				var newX = i * EntityGrid.TileSpriteWidth;
 				var newY = j * EntityGrid.TileSpriteHeight;
 				if ((i & 1) == 1) // Odd numbers are moved down by half.

@@ -1,7 +1,6 @@
 using System;
 using HexagonGame.ECS.Worlds;
 using HexagonGame.VectorHexes;
-using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 
 namespace HexagonGame.ECS.EntityGrids;
@@ -14,15 +13,18 @@ public struct EntityGrid
 {
 	public readonly int SizeX;
 	public readonly int SizeY;
-	public int[,] Grid;
+	public int[,,] Grid;
 	public const int TileSpriteHeight = 32;
 	public const int TileSpriteWidth = 49;
+	public const int TerrainLayer = 0;
+	public const int ObjectLayer = 1;
+	public const int MaxLayers = 2;
 
 	public EntityGrid(int newSizeX, int newSizeY)
 	{
 		SizeX = newSizeX;
 		SizeY = newSizeY;
-		Grid = new int[SizeX, SizeY];
+		Grid = new int[SizeX, SizeY, MaxLayers];
 	}
 
 	public void PopulateGrid(World world)
@@ -31,7 +33,7 @@ public struct EntityGrid
 		{
 			for (var y = 0; y < SizeY; y++)
 			{
-				Grid[x, y] = world.NewEntity();
+				Grid[x, y, TerrainLayer] = world.NewEntity();
 			}
 		}
 	}
@@ -49,18 +51,18 @@ public struct EntityGrid
 		return true;
 	}
 	
-	public int GetEntity(VectorHex hex)
+	public int GetEntity(VectorHex hex, int layer = TerrainLayer)
 	{
-		return GetEntity(hex.X, hex.Y);
+		return GetEntity(hex.X, hex.Y, layer);
 	}
 
-	public int GetEntity(int x, int y)
+	public int GetEntity(int x, int y, int layer = TerrainLayer)
 	{
 		if (!IsValidCoordinate(x, y))
 		{
 			throw new ArgumentOutOfRangeException();
 		}
-		return Grid[x, y];
+		return Grid[x, y, layer];
 	}
 
 	public Vector2 TileCoordinateToVector(int x, int y)

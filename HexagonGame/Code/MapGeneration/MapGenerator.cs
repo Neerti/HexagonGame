@@ -48,7 +48,7 @@ public class MapGenerator
 
 				// Apply height.
 				var heightValue = _heightNoise.GetNoise(noiseX, noiseY, noiseZ);
-				world.TileAttributeComponents.Get(grid.Grid[x, y]).Height = heightValue;
+				world.TileAttributeComponents.Get(grid.Grid[x, y, EntityGrid.TerrainLayer]).Height = heightValue;
 				//Console.WriteLine(heightValue);
 			}
 		}

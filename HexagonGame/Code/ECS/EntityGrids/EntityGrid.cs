@@ -1,4 +1,5 @@
 using System;
+using HexagonGame.ECS.Components;
 using HexagonGame.ECS.Worlds;
 using HexagonGame.VectorHexes;
 using Microsoft.Xna.Framework;

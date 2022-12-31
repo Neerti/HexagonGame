@@ -21,6 +21,7 @@ public class Game1 : Game
 	public CameraSystem CameraSystem;
 	public UISystem UISystem;
 	public TimeSystem TimeSystem;
+	public TextureSystem TextureSystem;
 
 	public bool Paused = false;
 	public TimeSpan FractionalTick;
@@ -47,12 +48,14 @@ public class Game1 : Game
 		InputSystem = new InputSystem();
 		UISystem = new UISystem();
 		TimeSystem = new TimeSystem();
+		TextureSystem = new TextureSystem();
+		TextureSystem.LoadContent(this);
 
 		// Create the world.
 		// Later on this should be part of starting a new game or loading a save file.
 		World = new World();
 
-		var mapSize = (int) Math.Pow(2, 10);
+		var mapSize = (int) Math.Pow(2, 6);
 		
 		// Set up the component holders.
 		// Might be good to add auto-resizing to the sparse sets.
@@ -64,7 +67,7 @@ public class Game1 : Game
 		World.Grid = new EntityGrid(mapSize, mapSize);
 		World.Grid.PopulateGrid(World);
 		
-		var hexagonTexture = Content.Load<Texture2D>("Images/generic_hexagon_64");
+		var hexagonTexture = TextureSystem.Textures["hexagon"];
 		
 		for (var i = 0; i < World.Grid.SizeX; i++)
 		{
@@ -107,6 +110,7 @@ public class Game1 : Game
 		// Generate the map.
 		var mapGenerator = new MapGenerator(0);
 		mapGenerator.ApplyNoise(World, World.Grid);
+		mapGenerator.AddTrees(this, World);
 
 		// Set up a basic camera out of a few components.
 		World.CameraEntity = World.NewEntity();

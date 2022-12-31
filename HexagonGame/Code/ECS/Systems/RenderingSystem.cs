@@ -61,6 +61,8 @@ public class RenderingSystem
 
                     var appearanceComponent = world.AppearanceComponents.Get(world.Grid.Grid[x, y, z]);
 
+                    texturePos = new Vector2(texturePos.X, texturePos.Y - appearanceComponent.SpriteTexture.Height);
+
                     var step = 1f / world.Grid.SizeY;
             		
             		var spriteLayer = step * y;

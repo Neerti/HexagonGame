@@ -1,13 +1,16 @@
 using System;
+using HexagonGame.ECS.Components;
 using HexagonGame.ECS.EntityGrids;
 using HexagonGame.ECS.Worlds;
 using Libraries.Noise;
+using Microsoft.Xna.Framework;
 
 namespace HexagonGame.MapGeneration;
 
 public class MapGenerator
 {
 	private FastNoiseLite _heightNoise;
+	private Random _random;
 
 	public MapGenerator(int newSeed)
 	{
@@ -16,6 +19,8 @@ public class MapGenerator
 		_heightNoise.SetFractalOctaves(6);
 		_heightNoise.SetSeed(newSeed);
 		_heightNoise.SetFrequency(0.02f);
+
+		_random = new Random(newSeed + 1);
 	}
 
 	public void ApplyNoise(World world, EntityGrid grid)
@@ -53,6 +58,38 @@ public class MapGenerator
 			}
 		}
 	}
-	
-	
+
+	public void AddTrees(Game1 game, World world)
+	{
+		// For now we're just gonna sprinkle trees in completely at random.
+		// Later on it would be better to do it on a per-biome basis, and perhaps use poisson distribution.
+		for (var i = 0; i < 200; i++)
+		{
+			var treeX = _random.Next(50);
+			var treeY = _random.Next(50);
+			if (world.Grid.GetEntity(treeX, treeY, EntityGrid.ObjectLayer) != World.NullEntityID)
+			{
+				// Something is already there.
+				continue;
+			}
+
+			var treeEntity = world.NewEntity();
+			world.Grid.Grid[treeX, treeY, EntityGrid.ObjectLayer] = treeEntity;
+			Console.WriteLine($"Placed a tree at {treeX}, {treeY}.");
+			
+			// This copypasta should go.
+			var newY = treeY * EntityGrid.TileSpriteHeight;
+			if ((treeX & 1) == 1) // Odd numbers are moved down by half.
+			{
+				newY += EntityGrid.TileSpriteHeight / 2;
+			}
+
+			//newY -= EntityGrid.TileSpriteDepth;
+			
+			world.PositionComponents.Add(treeEntity, new PositionComponent(treeX * EntityGrid.TileSpriteWidth, newY));
+			world.AppearanceComponents.Add(treeEntity, new AppearanceComponent(game.TextureSystem.Textures["pine_tree"], Color.Green));
+		}
+	}
+
+
 }

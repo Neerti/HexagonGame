@@ -44,7 +44,7 @@ public class InputSystem
 				cameraPos.X - (mousePos.X - FixedTogglePoint.X),
 				cameraPos.Y - (mousePos.Y - FixedTogglePoint.Y)
 			);
-			game.World.PositionComponents.Get(game.World.CameraEntity).Position = newPos;
+			game.CameraSystem.SetCamera(game.World, newPos);
 			FixedTogglePoint = mousePos;
 		}
 
@@ -73,6 +73,11 @@ public class InputSystem
 			else if (Keyboard.GetState().IsKeyDown(Keys.D))
 			{
 				movementDirection += Vector2.UnitX;
+			}
+
+			if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
+			{
+				cameraSpeed *= 2;
 			}
 		
 		

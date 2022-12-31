@@ -9,4 +9,9 @@ public class CameraSystem
 	{
 		world.PositionComponents.Get(world.CameraEntity).Position += direction * cameraSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 	}
+
+	public void SetCamera(World world, Vector2 newPosition)
+	{
+		world.PositionComponents.Get(world.CameraEntity).Position = newPosition;
+	}
 }

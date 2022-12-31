@@ -42,63 +42,73 @@ public class RenderingSystem
 
 		var topLeftCornerTile = world.Grid.VectorToTileCoordinate(topLeftCorner);
 		var bottomRightCornerTile = world.Grid.VectorToTileCoordinate(bottomRightCorner);
-		
-		SpriteBatch.Begin(SpriteSortMode.BackToFront);
-		for (var x = topLeftCornerTile.xCoordinate; x < bottomRightCornerTile.xCoordinate; x++)
+
+		for (var z = 0; z < EntityGrid.MaxLayers; z++)
 		{
-			for (var y = topLeftCornerTile.yCoordinate; y < bottomRightCornerTile.yCoordinate; y++)
-			{
-				// Get the position component.
-				var texturePos = world.PositionComponents.Get(world.Grid.Grid[x, y, EntityGrid.TerrainLayer]).Position;
-
-				// Offset from the camera.
-				texturePos -= cameraPos;
-
-				// Debug coloring.
-				var textureColor = Color.White;
-				if (x % 10 == 0)
-				{
-					textureColor = Color.Blue;
-					if (y % 10 == 0)
-					{
-						textureColor = Color.Yellow;
-					}
-				}
-				else if (y % 10 == 0)
-				{
-					textureColor = Color.Green;
-				}
-				if (x == 0 && y == 0)
-				{
-					textureColor = Color.Red;
-				}
-				
-
-				var step = 1f / world.Grid.SizeY;
-				
-				var spriteLayer = step * y;
-				if ((x & 1) == 1) // Odd tiles are moved down half a step.
-				{
-					spriteLayer += step / 2;
-				}
-				
-				spriteLayer = 1 - spriteLayer;
-				
-				SpriteBatch.Draw(
-					HexagonTexture, 
-					texturePos,
-					null,
-					textureColor,
-					0f,
-					Vector2.Zero,
-					Vector2.One,
-					SpriteEffects.None,
-					spriteLayer
-					);
-				
-			}
+			SpriteBatch.Begin(SpriteSortMode.BackToFront);
+            for (var x = topLeftCornerTile.xCoordinate; x < bottomRightCornerTile.xCoordinate; x++)
+            {
+            	for (var y = topLeftCornerTile.yCoordinate; y < bottomRightCornerTile.yCoordinate; y++)
+            	{
+            		// Get the position component.
+                    // This adds a branch inside a loop so it probably hurts performance.
+                    if (!world.PositionComponents.Contains(world.Grid.Grid[x, y, z]))
+                    {
+	                    continue;
+                    }
+            		var texturePos = world.PositionComponents.Get(world.Grid.Grid[x, y, z]).Position;
+    
+            		// Offset from the camera.
+            		texturePos -= cameraPos;
+    
+            		// Debug coloring.
+            		var textureColor = Color.White;
+            		if (x % 10 == 0)
+            		{
+            			textureColor = Color.Blue;
+            			if (y % 10 == 0)
+            			{
+            				textureColor = Color.Yellow;
+            			}
+            		}
+            		else if (y % 10 == 0)
+            		{
+            			textureColor = Color.Green;
+            		}
+            		if (x == 0 && y == 0)
+            		{
+            			textureColor = Color.Red;
+            		}
+            		
+    
+            		var step = 1f / world.Grid.SizeY;
+            		
+            		var spriteLayer = step * y;
+            		if ((x & 1) == 1) // Odd tiles are moved down half a step.
+            		{
+            			spriteLayer += step / 2;
+            		}
+            		
+            		spriteLayer = 1 - spriteLayer;
+            		
+            		SpriteBatch.Draw(
+            			HexagonTexture, 
+            			texturePos,
+            			null,
+            			textureColor,
+            			0f,
+            			Vector2.Zero,
+            			Vector2.One,
+            			SpriteEffects.None,
+            			spriteLayer
+            			);
+            		
+            	}
+            }
+            SpriteBatch.End();
 		}
-		SpriteBatch.End();
+		
+
 	}
 
 

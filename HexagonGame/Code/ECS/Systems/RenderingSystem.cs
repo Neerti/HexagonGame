@@ -3,6 +3,7 @@ using HexagonGame.ECS.EntityGrids;
 using HexagonGame.ECS.Worlds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace HexagonGame.ECS.Systems;
 
@@ -65,7 +66,7 @@ public class RenderingSystem
 
                     // Move the texture down to pretend that the sprite origin is at the bottom left, instead of the top left.
                     // This is done to support sprites taller than the tile size.
-                    texturePos = new Vector2(texturePos.X, texturePos.Y - appearanceComponent.SpriteTexture.Height);
+                    //texturePos = new Vector2(texturePos.X, texturePos.Y - appearanceComponent.SpriteTexture.Height);
 
                     var step = 1f / world.Grid.SizeY;
             		
@@ -95,42 +96,51 @@ public class RenderingSystem
                     }
 
                     // Bounding box drawing.
+                    // Code adapted from https://stackoverflow.com/a/13894313.
                     var rect = appearanceComponent.SpriteTexture.Bounds;
+                    var boundingColor = Color.Red;
+                    var boundingLineSize = 1;
+                    rect.Offset(texturePos);
+                    if (rect.Contains(Mouse.GetState().Position))
+                    {
+	                    boundingColor = Color.Green;
+	                    boundingLineSize++;
+                    }
                     
                     // Left line.
                     SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
-	                    rect.X + (int)texturePos.X,
-	                    rect.Y + (int)texturePos.Y,
-	                    1,
-	                    rect.Height + 1),
-	                    Color.Red
+	                    rect.X,
+	                    rect.Y,
+	                    boundingLineSize,
+	                    rect.Height + boundingLineSize),
+	                    boundingColor
 	                    );
                     
                     // Top line.
                     SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
-	                    rect.X + (int)texturePos.X,
-	                    rect.Y + (int)texturePos.Y,
-	                    rect.Width + 1,
-	                    1),
-	                    Color.Red
+	                    rect.X,
+	                    rect.Y,
+	                    rect.Width + boundingLineSize,
+	                    boundingLineSize),
+	                    boundingColor
 	                    );
                     
                     // Right line.
                     SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
-		                    rect.X + (int)texturePos.X + rect.Width,
-		                    rect.Y + (int)texturePos.Y,
-		                    1,
-		                    rect.Height + 1),
-	                    Color.Red
+		                    rect.X + rect.Width,
+		                    rect.Y,
+		                    boundingLineSize,
+		                    rect.Height + boundingLineSize),
+	                    boundingColor
                     );
                     
                     // Bottom line.
                     SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
-		                    rect.X + (int)texturePos.X,
-		                    rect.Y + (int)texturePos.Y + rect.Height,
-		                    rect.Width + 1,
-		                    1),
-	                    Color.Red
+		                    rect.X,
+		                    rect.Y + rect.Height,
+		                    rect.Width + boundingLineSize,
+		                    boundingLineSize),
+	                    boundingColor
                     );
             		
             	}
@@ -143,25 +153,3 @@ public class RenderingSystem
 
 
 }
-
-
-/*
-class RectangleSprite
-{
-    static Texture2D _pointTexture;
-    public static void DrawRectangle(SpriteBatch spriteBatch, Rectangle rectangle, Color color, int lineWidth)
-    {
-        if (_pointTexture == null)
-        {
-            _pointTexture = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
-            _pointTexture.SetData<Color>(new Color[]{Color.White});
-        }
-
-        spriteBatch.Draw(_pointTexture, new Rectangle(rectangle.X, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
-        spriteBatch.Draw(_pointTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width + lineWidth, lineWidth), color);
-        spriteBatch.Draw(_pointTexture, new Rectangle(rectangle.X + rectangle.Width, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
-        spriteBatch.Draw(_pointTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height, rectangle.Width + lineWidth, lineWidth), color);
-    }     
-}
-
-*/

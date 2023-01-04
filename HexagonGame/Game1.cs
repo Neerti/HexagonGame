@@ -67,7 +67,7 @@ public class Game1 : Game
 		World.Grid = new EntityGrid(mapSize, mapSize);
 		World.Grid.PopulateGrid(World);
 		
-		var hexagonTexture = TextureSystem.Textures["hexagon_outline"];
+		var hexagonTexture = TextureSystem.Textures["hexagon"];
 		
 		for (var i = 0; i < World.Grid.SizeX; i++)
 		{

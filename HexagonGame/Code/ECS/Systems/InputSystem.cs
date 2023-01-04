@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using HexagonGame.ECS.EntityGrids;
+using HexagonGame.ECS.Worlds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -15,9 +18,26 @@ public class InputSystem
 	
 	public void PollForInput(Game1 game, GameTime gameTime)
 	{
+		// Don't do anything if the window isn't focused.
+		// Keyboard input isn't received, but mouse input could still come in and result in the game thinking the
+		// user is trying to click on something off screen.
+		if (!game.IsActive)
+		{
+			return;
+		}
+		
 		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
 		    Keyboard.GetState().IsKeyDown(Keys.Escape))
 			game.Exit();
+
+		if (IsLeftMouseButtonJustDown())
+		{
+			var clickedEntity = FindEntityOverMouse(game.World, Mouse.GetState());
+			if (clickedEntity != World.NullEntityID)
+			{
+				game.World.AppearanceComponents.Get(clickedEntity).SpriteColor = Color.Red;
+			}
+		}
 
 		// Camera control.
 		// This should get spun off into a camera system later on so it can do things like easing.
@@ -107,10 +127,128 @@ public class InputSystem
 			game.TickSpeedIndex = Math.Max(--game.TickSpeedIndex, 0);
 			game.TickDelay = game.TickSpeedOptions[game.TickSpeedIndex];
 		}
+		
+		if (IsKeyJustDown(Keys.B))
+		{
+			game.RenderingSystem.DrawBoundingBoxes = !game.RenderingSystem.DrawBoundingBoxes;
+		}
 
 		OldKeyboardState = Keyboard.GetState();
 		OldMouseState = Mouse.GetState();
 
+	}
+
+	public int FindEntityOverMouse(World world, MouseState state)
+	{
+		// Click detection is done in three stages.
+		// The first stage uses bounding boxes based on each entity's texture, to approximate what could've been 
+		// clicked on.
+		var mousePosition = state.Position.ToVector2();
+		var mouseWorldPosition = mousePosition + world.PositionComponents.Get(world.CameraEntity).Position;
+		const float offset = 128f;
+		
+		var topLeftPosition = new Vector2(mouseWorldPosition.X - offset, mouseWorldPosition.Y - offset);
+		var bottomRightPosition = new Vector2(mouseWorldPosition.X + offset, mouseWorldPosition.Y + offset);
+
+		var topLeftCorner = world.Grid.VectorToTileCoordinate(topLeftPosition);
+		var bottomRightCorner = world.Grid.VectorToTileCoordinate(bottomRightPosition);
+
+		var clickCandidates = new List<int>();
+		var entityLayers = new Dictionary<int, int>();
+
+		for (var x = topLeftCorner.xCoordinate; x < bottomRightCorner.xCoordinate; x++)
+		{
+			for (var y = topLeftCorner.yCoordinate; y < bottomRightCorner.yCoordinate; y++)
+			{
+				for (var layer = 0; layer < EntityGrid.MaxLayers; layer++)
+				{
+					var entity = world.Grid.Grid[x, y, layer];
+					if (entity == World.NullEntityID)
+					{
+						continue;
+					}
+
+					var boundingBox = world.AppearanceComponents.Get(entity).SpriteTexture.Bounds;
+					boundingBox.Offset(world.PositionComponents.Get(entity).Position);
+					//boundingBox.Offset(0, -boundingBox.Height);
+					if (boundingBox.Contains(mouseWorldPosition))
+					{
+						clickCandidates.Add(entity);
+						entityLayers[entity] = layer;
+					}
+				}
+			}
+		}
+
+		if (clickCandidates.Count == 0)
+		{
+			return World.NullEntityID;
+		}
+
+		// Second stage narrows down the possible entities with pixel transparency checking, 
+		// ruling out objects where the mouse was over a fully transparent pixel.
+		// This makes clicking pixel perfect, but is relatively expensive.
+		// Fortunately it only needs to check a few sprites due to stage one ruling out most other candidates.
+
+		var pixelPerfectCandidates = new List<int>();
+
+		foreach (var entity in clickCandidates)
+		{
+			var texture = world.AppearanceComponents.Get(entity).SpriteTexture;
+			var rawData = new Color[1];
+
+			var localClickCoordinates = mouseWorldPosition + -world.PositionComponents.Get(entity).Position;
+		//	localClickCoordinates =
+		//		new Vector2((float)Math.Floor(localClickCoordinates.X), (float)Math.Floor(localClickCoordinates.Y));
+			var pixelRect = new Rectangle((int)localClickCoordinates.X, (int)localClickCoordinates.Y, 1, 1);
+			texture.GetData(0, pixelRect, rawData, 0, 1);
+			Console.WriteLine(rawData[0]);
+			
+			// If the pixel is not transparent, it's still in the running.
+			if (rawData[0] != new Color())
+			{
+				pixelPerfectCandidates.Add(entity);
+			}
+			
+		}
+		
+		if (pixelPerfectCandidates.Count == 0)
+		{
+			Console.WriteLine("No entities in pixel perfect list.");
+			return World.NullEntityID;
+		}
+		
+		// The third stage deals with overlapping sprites, based on a layer priority system.
+		// This prevents clicking on a tile if a tree occludes where it was clicked.
+
+		var thing = new Dictionary<int, float>();
+		// The rules for priority are;
+		//	* UI elements have priority over any map element.
+		//	* Entity on a higher entity grid layer have priority over those on a lower layer.
+		//		E.g. trees are clicked before tiles if they overlap.
+		//	* Entities that are closer towards the bottom of the screen have priority over those towards the top.
+		foreach (var entity in pixelPerfectCandidates)
+		{
+			var entityScore = 0f;
+			var entityPosition = world.PositionComponents.Get(entity).Position;
+			entityScore = entityPosition.Y;
+
+			entityScore *= entityLayers[entity] + 1;
+
+			thing[entity] = entityScore;
+		}
+
+		var winner = World.NullEntityID;
+		var highestScore = float.NegativeInfinity;
+		
+		foreach (var pair in thing)
+		{
+			if (!(pair.Value > highestScore)) continue;
+			winner = pair.Key;
+			highestScore = pair.Value;
+		}
+
+		return winner;
 	}
 
 	/// <summary>

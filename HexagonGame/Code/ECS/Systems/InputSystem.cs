@@ -12,9 +12,9 @@ namespace HexagonGame.ECS.Systems;
 /// </summary>
 public class InputSystem
 {
-	public KeyboardState OldKeyboardState = new KeyboardState();
-	public MouseState OldMouseState;
-	public Vector2 FixedTogglePoint;
+	private KeyboardState _oldKeyboardState;
+	private MouseState _oldMouseState;
+	private Vector2 _fixedTogglePoint;
 
 	public void PollForInput(Game1 game, GameTime gameTime)
 	{
@@ -47,7 +47,7 @@ public class InputSystem
 		if (IsMiddleMouseButtonJustDown())
 		{
 			Mouse.SetCursor(MouseCursor.SizeAll);
-			FixedTogglePoint = Mouse.GetState().Position.ToVector2();
+			_fixedTogglePoint = Mouse.GetState().Position.ToVector2();
 		}
 
 		if (IsMiddleMouseButtonJustUp())
@@ -61,11 +61,11 @@ public class InputSystem
 			var mousePos = Mouse.GetState().Position.ToVector2();
 			var cameraPos = game.World.PositionComponents.Get(game.World.CameraEntity).Position;
 			var newPos = new Vector2(
-				cameraPos.X - (mousePos.X - FixedTogglePoint.X),
-				cameraPos.Y - (mousePos.Y - FixedTogglePoint.Y)
+				cameraPos.X - (mousePos.X - _fixedTogglePoint.X),
+				cameraPos.Y - (mousePos.Y - _fixedTogglePoint.Y)
 			);
 			game.CameraSystem.SetCamera(game.World, newPos);
-			FixedTogglePoint = mousePos;
+			_fixedTogglePoint = mousePos;
 		}
 
 		else
@@ -133,8 +133,8 @@ public class InputSystem
 			game.RenderingSystem.DrawBoundingBoxes = !game.RenderingSystem.DrawBoundingBoxes;
 		}
 
-		OldKeyboardState = Keyboard.GetState();
-		OldMouseState = Mouse.GetState();
+		_oldKeyboardState = Keyboard.GetState();
+		_oldMouseState = Mouse.GetState();
 	}
 
 	public int FindEntityOverMouse(World world, MouseState state)
@@ -227,9 +227,8 @@ public class InputSystem
 		//	* Entities that are closer towards the bottom of the screen have priority over those towards the top.
 		foreach (var entity in pixelPerfectCandidates)
 		{
-			var entityScore = 0f;
 			var entityPosition = world.PositionComponents.Get(entity).Position;
-			entityScore = entityPosition.Y;
+			var entityScore = entityPosition.Y;
 
 			entityScore *= entityLayers[entity] + 1;
 
@@ -256,7 +255,7 @@ public class InputSystem
 	/// <returns>True if the key is held down this frame, and it was not held down on the previous frame.</returns>
 	public bool IsKeyJustDown(Keys key)
 	{
-		return Keyboard.GetState().IsKeyDown(key) && OldKeyboardState.IsKeyUp(key);
+		return Keyboard.GetState().IsKeyDown(key) && _oldKeyboardState.IsKeyUp(key);
 	}
 
 	/// <summary>
@@ -266,7 +265,7 @@ public class InputSystem
 	/// <returns>True if the key is currently up this frame, and it was not up on the previous frame.</returns>
 	public bool IsKeyJustUp(Keys key)
 	{
-		return Keyboard.GetState().IsKeyUp(key) && OldKeyboardState.IsKeyDown(key);
+		return Keyboard.GetState().IsKeyUp(key) && _oldKeyboardState.IsKeyDown(key);
 	}
 
 	// Sadly the Mouse class doesn't have a generic `IsMouseButton[Down|Up]` like the Keyboard class does.
@@ -279,33 +278,33 @@ public class InputSystem
 	/// and it was not held down on the previous frame.</returns>
 	public bool IsLeftMouseButtonJustDown()
 	{
-		return Mouse.GetState().LeftButton == ButtonState.Pressed && OldMouseState.LeftButton == ButtonState.Released;
+		return Mouse.GetState().LeftButton == ButtonState.Pressed && _oldMouseState.LeftButton == ButtonState.Released;
 	}
 
 	public bool IsLeftMouseButtonJustUp()
 	{
-		return Mouse.GetState().LeftButton == ButtonState.Released && OldMouseState.LeftButton == ButtonState.Pressed;
+		return Mouse.GetState().LeftButton == ButtonState.Released && _oldMouseState.LeftButton == ButtonState.Pressed;
 	}
 
 	public bool IsMiddleMouseButtonJustDown()
 	{
 		return Mouse.GetState().MiddleButton == ButtonState.Pressed &&
-		       OldMouseState.MiddleButton == ButtonState.Released;
+		       _oldMouseState.MiddleButton == ButtonState.Released;
 	}
 
 	public bool IsMiddleMouseButtonJustUp()
 	{
 		return Mouse.GetState().MiddleButton == ButtonState.Released &&
-		       OldMouseState.MiddleButton == ButtonState.Pressed;
+		       _oldMouseState.MiddleButton == ButtonState.Pressed;
 	}
 
 	public bool IsRightMouseButtonJustDown()
 	{
-		return Mouse.GetState().RightButton == ButtonState.Pressed && OldMouseState.RightButton == ButtonState.Released;
+		return Mouse.GetState().RightButton == ButtonState.Pressed && _oldMouseState.RightButton == ButtonState.Released;
 	}
 
 	public bool IsRightMouseButtonJustUp()
 	{
-		return Mouse.GetState().RightButton == ButtonState.Released && OldMouseState.RightButton == ButtonState.Pressed;
+		return Mouse.GetState().RightButton == ButtonState.Released && _oldMouseState.RightButton == ButtonState.Pressed;
 	}
 }

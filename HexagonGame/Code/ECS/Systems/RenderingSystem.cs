@@ -9,13 +9,15 @@ namespace HexagonGame.ECS.Systems;
 public class RenderingSystem
 {
 	public SpriteBatch SpriteBatch;
+	public Texture2D BoundingBoxTexture;
 
-	public float HighestPosition;
-	public float LowestPosition;
+	public bool DrawBoundingBoxes = true;
 
 	public void LoadContent(Game1 game)
 	{
 		SpriteBatch = new SpriteBatch(game.GraphicsDevice);
+		BoundingBoxTexture = new Texture2D(game.GraphicsDevice, 1, 1);
+		BoundingBoxTexture.SetData(new[]{Color.White});
 	}
 
 	public void RenderTerrain(World world, Game1 game)
@@ -61,6 +63,8 @@ public class RenderingSystem
 
                     var appearanceComponent = world.AppearanceComponents.Get(world.Grid.Grid[x, y, z]);
 
+                    // Move the texture down to pretend that the sprite origin is at the bottom left, instead of the top left.
+                    // This is done to support sprites taller than the tile size.
                     texturePos = new Vector2(texturePos.X, texturePos.Y - appearanceComponent.SpriteTexture.Height);
 
                     var step = 1f / world.Grid.SizeY;
@@ -84,6 +88,50 @@ public class RenderingSystem
             			SpriteEffects.None,
             			spriteLayer
             			);
+
+                    if (!DrawBoundingBoxes)
+                    {
+	                    continue;
+                    }
+
+                    // Bounding box drawing.
+                    var rect = appearanceComponent.SpriteTexture.Bounds;
+                    
+                    // Left line.
+                    SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
+	                    rect.X + (int)texturePos.X,
+	                    rect.Y + (int)texturePos.Y,
+	                    1,
+	                    rect.Height + 1),
+	                    Color.Red
+	                    );
+                    
+                    // Top line.
+                    SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
+	                    rect.X + (int)texturePos.X,
+	                    rect.Y + (int)texturePos.Y,
+	                    rect.Width + 1,
+	                    1),
+	                    Color.Red
+	                    );
+                    
+                    // Right line.
+                    SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
+		                    rect.X + (int)texturePos.X + rect.Width,
+		                    rect.Y + (int)texturePos.Y,
+		                    1,
+		                    rect.Height + 1),
+	                    Color.Red
+                    );
+                    
+                    // Bottom line.
+                    SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
+		                    rect.X + (int)texturePos.X,
+		                    rect.Y + (int)texturePos.Y + rect.Height,
+		                    rect.Width + 1,
+		                    1),
+	                    Color.Red
+                    );
             		
             	}
             }
@@ -95,3 +143,25 @@ public class RenderingSystem
 
 
 }
+
+
+/*
+class RectangleSprite
+{
+    static Texture2D _pointTexture;
+    public static void DrawRectangle(SpriteBatch spriteBatch, Rectangle rectangle, Color color, int lineWidth)
+    {
+        if (_pointTexture == null)
+        {
+            _pointTexture = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+            _pointTexture.SetData<Color>(new Color[]{Color.White});
+        }
+
+        spriteBatch.Draw(_pointTexture, new Rectangle(rectangle.X, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
+        spriteBatch.Draw(_pointTexture, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width + lineWidth, lineWidth), color);
+        spriteBatch.Draw(_pointTexture, new Rectangle(rectangle.X + rectangle.Width, rectangle.Y, lineWidth, rectangle.Height + lineWidth), color);
+        spriteBatch.Draw(_pointTexture, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height, rectangle.Width + lineWidth, lineWidth), color);
+    }     
+}
+
+*/

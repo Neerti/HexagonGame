@@ -8,16 +8,16 @@ namespace HexagonGame.Tests;
 public class SparseSetTests
 {
 	private const int MaxIndex = 10;
-	private SparseSet<TestComponent> _sparseSet = new (MaxIndex, MaxIndex);
+	private SparseSet<TestComponent> _sparseSet = new(MaxIndex, MaxIndex);
 
 
 	[Fact]
 	public void Add_Normal_ShouldBeAdded()
 	{
-		_sparseSet.Add(0, new TestComponent{Number = 0});
+		_sparseSet.Add(0, new TestComponent {Number = 0});
 		Assert.Equal(1, _sparseSet.Count);
 	}
-	
+
 	[Fact]
 	public void Add_DuplicateIndex_ShouldBeIgnored()
 	{
@@ -33,9 +33,9 @@ public class SparseSetTests
 	{
 		Assert.Throws<ArgumentOutOfRangeException>(
 			() => _sparseSet.Add(MaxIndex + 1, new TestComponent())
-			);
+		);
 	}
-	
+
 	[Fact]
 	public void Add_OutOfBoundsUnder_ShouldThrowException()
 	{
@@ -92,6 +92,7 @@ public class SparseSetTests
 		{
 			total++;
 		}
+
 		Assert.True(total == MaxIndex / 2);
 	}
 }

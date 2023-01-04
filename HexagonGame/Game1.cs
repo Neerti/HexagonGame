@@ -15,7 +15,7 @@ public class Game1 : Game
 	public GraphicsDeviceManager Graphics;
 
 	public World World;
-	
+
 	public InputSystem InputSystem;
 	public RenderingSystem RenderingSystem;
 	public CameraSystem CameraSystem;
@@ -56,7 +56,7 @@ public class Game1 : Game
 		World = new World();
 
 		var mapSize = (int) Math.Pow(2, 6);
-		
+
 		// Set up the component holders.
 		// Might be good to add auto-resizing to the sparse sets.
 		World.PositionComponents = new SparseSet<PositionComponent>(mapSize * mapSize + 1000);
@@ -66,9 +66,9 @@ public class Game1 : Game
 		// The map.
 		World.Grid = new EntityGrid(mapSize, mapSize);
 		World.Grid.PopulateGrid(World);
-		
+
 		var hexagonTexture = TextureSystem.Textures["hexagon"];
-		
+
 		for (var i = 0; i < World.Grid.SizeX; i++)
 		{
 			for (var j = 0; j < World.Grid.SizeY; j++)
@@ -80,8 +80,9 @@ public class Game1 : Game
 				{
 					newY += EntityGrid.TileSpriteHeight / 2;
 				}
+
 				World.PositionComponents.Add(tileEntity, new PositionComponent(newX, newY));
-				
+
 				World.TileAttributeComponents.Add(tileEntity, new TileAttributeComponent());
 
 				// Debug coloring.
@@ -98,15 +99,16 @@ public class Game1 : Game
 				{
 					textureColor = Color.Green;
 				}
+
 				if (i == 0 && j == 0)
 				{
 					textureColor = Color.Red;
 				}
-				
+
 				World.AppearanceComponents.Add(tileEntity, new AppearanceComponent(hexagonTexture, textureColor));
 			}
 		}
-		
+
 		// Generate the map.
 		var mapGenerator = new MapGenerator(0);
 		mapGenerator.ApplyNoise(World, World.Grid);
@@ -166,12 +168,12 @@ public class Game1 : Game
 
 		// Tile map.
 		RenderingSystem.RenderTerrain(World, this);
-		
+
 		// Things on the map.
-		
+
 		// UI.
 		UISystem.DrawDebugUI(World, this, gameTime);
-		
+
 		base.Draw(gameTime);
 	}
 }

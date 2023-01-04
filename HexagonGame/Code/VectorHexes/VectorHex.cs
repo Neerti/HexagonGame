@@ -82,8 +82,7 @@ public readonly struct VectorHex : IEquatable<VectorHex>
 	[PublicAPI]
 	public int Y { get; }
 
-	[PublicAPI]
-	public static readonly VectorHex[] AdjacentHexes = new[]
+	[PublicAPI] public static readonly VectorHex[] AdjacentHexes = new[]
 	{
 		new VectorHex(1, 0, -1), new VectorHex(1, -1, 0), new VectorHex(0, -1, 1),
 		new VectorHex(-1, 0, 1), new VectorHex(-1, 1, 0), new VectorHex(0, 1, -1)

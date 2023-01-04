@@ -14,22 +14,22 @@ public class SparseSet<T> : IEnumerable<T>
 	/// Array of indices for the <see cref="Dense"/> array, which can contain holes.
 	/// </summary>
 	public int[] Sparse;
-		
+
 	/// <summary>
 	/// Array of indices for <see cref="Sparse"/>, that has no holes.
 	/// </summary>
 	public int[] Dense;
-		
+
 	/// <summary>
 	/// Array that contains the elements directly.
 	/// </summary>
 	public T[] Elements;
-		
+
 	/// <summary>
 	/// How many objects are contained inside of <see cref="Elements"/>, and by extension, inside of <see cref="Dense"/>.
 	/// </summary>
 	public int Count;
-		
+
 	/// <summary>
 	/// Maximum capacity for the sparse array.
 	/// </summary>
@@ -58,6 +58,7 @@ public class SparseSet<T> : IEnumerable<T>
 			// Would prefer to have return null but that's apparently not an option here.
 			throw new ArgumentException("Index pointed to hole in sparse array.", nameof(index));
 		}
+
 		return ref Elements[Sparse[index]];
 	}
 
@@ -84,12 +85,12 @@ public class SparseSet<T> : IEnumerable<T>
 		}
 
 		// Get the last element in the collection.
-		var last = Dense[Count-1];
-			
+		var last = Dense[Count - 1];
+
 		// Replace the element being removed with the last element.
 		Dense[Sparse[index]] = last;
 		Elements[Sparse[index]] = Elements[last];
-			
+
 		// Update the index for the sparse array to point to where the removed element was.
 		Sparse[last] = Sparse[index];
 
@@ -115,10 +116,9 @@ public class SparseSet<T> : IEnumerable<T>
 			yield return Elements[i];
 		}
 	}
-		
+
 	IEnumerator IEnumerable.GetEnumerator()
 	{
 		return GetEnumerator();
 	}
-		
 }

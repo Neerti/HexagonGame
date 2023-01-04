@@ -27,7 +27,7 @@ public class MapGenerator
 	{
 		// Larger numbers make the map look bigger. Smaller ones have the opposite effect.
 		var noiseSamplingScale = 1f;
-		
+
 		for (var x = 0; x < grid.SizeX; x++)
 		{
 			for (var y = 0; y < grid.SizeY; y++)
@@ -35,17 +35,17 @@ public class MapGenerator
 				// Sample the noise at smaller intervals.
 				var y1 = (float) y;
 				var x1 = (float) x / grid.SizeX;
-				
+
 				// Three dimensional coordinates, to sample the noise in the shape of a cylinder.
 				// This allows for the map to wrap on the sides.
-				var noiseX = (float)(Math.Sin(x1 * Math.Tau) / Math.Tau);
-				var noiseY = (float)(Math.Cos(x1 * Math.Tau) / Math.Tau);
+				var noiseX = (float) (Math.Sin(x1 * Math.Tau) / Math.Tau);
+				var noiseY = (float) (Math.Cos(x1 * Math.Tau) / Math.Tau);
 				var noiseZ = y1;
 
 				// [Cos/Sin]/Tau gives a range of [0, 1]. We scale this by grid.SizeX to get the range of the map.
 				noiseX *= grid.SizeX;
 				noiseY *= grid.SizeX;
-				
+
 				// Then divide by noise_sampling_scale to fine-tune the apparent map size.
 				noiseX /= noiseSamplingScale;
 				noiseY /= noiseSamplingScale;
@@ -76,7 +76,7 @@ public class MapGenerator
 			var treeEntity = world.NewEntity();
 			world.Grid.Grid[treeX, treeY, EntityGrid.ObjectLayer] = treeEntity;
 			Console.WriteLine($"Placed a tree at {treeX}, {treeY}.");
-			
+
 			// This copypasta should go.
 			var newY = treeY * EntityGrid.TileSpriteHeight;
 			if ((treeX & 1) == 1) // Odd numbers are moved down by half.
@@ -85,11 +85,10 @@ public class MapGenerator
 			}
 
 			//newY -= EntityGrid.TileSpriteDepth;
-			
+
 			world.PositionComponents.Add(treeEntity, new PositionComponent(treeX * EntityGrid.TileSpriteWidth, newY));
-			world.AppearanceComponents.Add(treeEntity, new AppearanceComponent(game.TextureSystem.Textures["pine_tree"], Color.Green));
+			world.AppearanceComponents.Add(treeEntity,
+				new AppearanceComponent(game.TextureSystem.Textures["pine_tree"], Color.Green));
 		}
 	}
-
-
 }

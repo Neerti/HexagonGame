@@ -18,7 +18,7 @@ public class World
 	public List<int> Entities = new();
 	public int EntityTally = 1; // This starts at 1, and not 0, so that 0 will always be an empty entity.
 	public const int NullEntityID = 0;
-	
+
 	// In the future, this should be some kind of object to manage this for each component.
 	public SparseSet<PositionComponent> PositionComponents;
 	public SparseSet<TileAttributeComponent> TileAttributeComponents;
@@ -33,7 +33,7 @@ public class World
 
 	// Entity ID for the game camera.
 	public int CameraEntity;
-	
+
 	public int NewEntity()
 	{
 		Entities.Add(EntityTally);

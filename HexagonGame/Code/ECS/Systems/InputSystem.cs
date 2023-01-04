@@ -15,7 +15,7 @@ public class InputSystem
 	public KeyboardState OldKeyboardState = new KeyboardState();
 	public MouseState OldMouseState;
 	public Vector2 FixedTogglePoint;
-	
+
 	public void PollForInput(Game1 game, GameTime gameTime)
 	{
 		// Don't do anything if the window isn't focused.
@@ -25,7 +25,7 @@ public class InputSystem
 		{
 			return;
 		}
-		
+
 		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
 		    Keyboard.GetState().IsKeyDown(Keys.Escape))
 			game.Exit();
@@ -41,7 +41,7 @@ public class InputSystem
 
 		// Camera control.
 		// This should get spun off into a camera system later on so it can do things like easing.
-		
+
 		// Mouse camera control.
 		// Click-drag camera movement code adapted from code written by "AlienBuchner" at https://godotengine.org/qa/46892/would-map-navigation-camera-with-middle-mouse#a52576.
 		if (IsMiddleMouseButtonJustDown())
@@ -73,7 +73,7 @@ public class InputSystem
 			// Keyboard camera control.
 			var movementDirection = Vector2.Zero;
 			var cameraSpeed = 500f;
-		
+
 			// TODO: Keybinding system so people can rebind keys.
 			if (Keyboard.GetState().IsKeyDown(Keys.W))
 			{
@@ -84,12 +84,12 @@ public class InputSystem
 			{
 				movementDirection += Vector2.UnitY;
 			}
-		
+
 			if (Keyboard.GetState().IsKeyDown(Keys.A))
 			{
 				movementDirection += -Vector2.UnitX;
 			}
-		
+
 			else if (Keyboard.GetState().IsKeyDown(Keys.D))
 			{
 				movementDirection += Vector2.UnitX;
@@ -99,13 +99,13 @@ public class InputSystem
 			{
 				cameraSpeed *= 2;
 			}
-		
-		
+
 
 			if (movementDirection != Vector2.Zero)
 			{
 				game.CameraSystem.MoveCamera(game.World, movementDirection, cameraSpeed, gameTime);
-				game.World.PositionComponents.Get(game.World.CameraEntity).Position += movementDirection * cameraSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+				game.World.PositionComponents.Get(game.World.CameraEntity).Position += movementDirection * cameraSpeed *
+					(float) gameTime.ElapsedGameTime.TotalSeconds;
 			}
 		}
 
@@ -121,13 +121,13 @@ public class InputSystem
 			game.TickSpeedIndex = Math.Min(++game.TickSpeedIndex, game.TickSpeedOptions.Length - 1);
 			game.TickDelay = game.TickSpeedOptions[game.TickSpeedIndex];
 		}
-		
+
 		if (IsKeyJustDown(Keys.OemMinus))
 		{
 			game.TickSpeedIndex = Math.Max(--game.TickSpeedIndex, 0);
 			game.TickDelay = game.TickSpeedOptions[game.TickSpeedIndex];
 		}
-		
+
 		if (IsKeyJustDown(Keys.B))
 		{
 			game.RenderingSystem.DrawBoundingBoxes = !game.RenderingSystem.DrawBoundingBoxes;
@@ -135,7 +135,6 @@ public class InputSystem
 
 		OldKeyboardState = Keyboard.GetState();
 		OldMouseState = Mouse.GetState();
-
 	}
 
 	public int FindEntityOverMouse(World world, MouseState state)
@@ -146,7 +145,7 @@ public class InputSystem
 		var mousePosition = state.Position.ToVector2();
 		var mouseWorldPosition = mousePosition + world.PositionComponents.Get(world.CameraEntity).Position;
 		const float offset = 128f;
-		
+
 		var topLeftPosition = new Vector2(mouseWorldPosition.X - offset, mouseWorldPosition.Y - offset);
 		var bottomRightPosition = new Vector2(mouseWorldPosition.X + offset, mouseWorldPosition.Y + offset);
 
@@ -198,26 +197,25 @@ public class InputSystem
 			var rawData = new Color[1];
 
 			var localClickCoordinates = mouseWorldPosition + -world.PositionComponents.Get(entity).Position;
-		//	localClickCoordinates =
-		//		new Vector2((float)Math.Floor(localClickCoordinates.X), (float)Math.Floor(localClickCoordinates.Y));
-			var pixelRect = new Rectangle((int)localClickCoordinates.X, (int)localClickCoordinates.Y, 1, 1);
+			//	localClickCoordinates =
+			//		new Vector2((float)Math.Floor(localClickCoordinates.X), (float)Math.Floor(localClickCoordinates.Y));
+			var pixelRect = new Rectangle((int) localClickCoordinates.X, (int) localClickCoordinates.Y, 1, 1);
 			texture.GetData(0, pixelRect, rawData, 0, 1);
 			Console.WriteLine(rawData[0]);
-			
+
 			// If the pixel is not transparent, it's still in the running.
 			if (rawData[0] != new Color())
 			{
 				pixelPerfectCandidates.Add(entity);
 			}
-			
 		}
-		
+
 		if (pixelPerfectCandidates.Count == 0)
 		{
 			Console.WriteLine("No entities in pixel perfect list.");
 			return World.NullEntityID;
 		}
-		
+
 		// The third stage deals with overlapping sprites, based on a layer priority system.
 		// This prevents clicking on a tile if a tree occludes where it was clicked.
 
@@ -240,7 +238,7 @@ public class InputSystem
 
 		var winner = World.NullEntityID;
 		var highestScore = float.NegativeInfinity;
-		
+
 		foreach (var pair in thing)
 		{
 			if (!(pair.Value > highestScore)) continue;
@@ -270,10 +268,10 @@ public class InputSystem
 	{
 		return Keyboard.GetState().IsKeyUp(key) && OldKeyboardState.IsKeyDown(key);
 	}
-	
+
 	// Sadly the Mouse class doesn't have a generic `IsMouseButton[Down|Up]` like the Keyboard class does.
 	// Thus methods for left, middle, and right mouse buttons each.
-	
+
 	/// <summary>
 	/// Tests if the left mouse button was just clicked. Will only be true once per click, even if held down.
 	/// </summary>
@@ -283,31 +281,31 @@ public class InputSystem
 	{
 		return Mouse.GetState().LeftButton == ButtonState.Pressed && OldMouseState.LeftButton == ButtonState.Released;
 	}
-	
+
 	public bool IsLeftMouseButtonJustUp()
 	{
 		return Mouse.GetState().LeftButton == ButtonState.Released && OldMouseState.LeftButton == ButtonState.Pressed;
 	}
-	
+
 	public bool IsMiddleMouseButtonJustDown()
 	{
-		return Mouse.GetState().MiddleButton == ButtonState.Pressed && OldMouseState.MiddleButton == ButtonState.Released;
+		return Mouse.GetState().MiddleButton == ButtonState.Pressed &&
+		       OldMouseState.MiddleButton == ButtonState.Released;
 	}
-	
+
 	public bool IsMiddleMouseButtonJustUp()
 	{
-		return Mouse.GetState().MiddleButton == ButtonState.Released && OldMouseState.MiddleButton == ButtonState.Pressed;
+		return Mouse.GetState().MiddleButton == ButtonState.Released &&
+		       OldMouseState.MiddleButton == ButtonState.Pressed;
 	}
-	
+
 	public bool IsRightMouseButtonJustDown()
 	{
 		return Mouse.GetState().RightButton == ButtonState.Pressed && OldMouseState.RightButton == ButtonState.Released;
 	}
-	
+
 	public bool IsRightMouseButtonJustUp()
 	{
 		return Mouse.GetState().RightButton == ButtonState.Released && OldMouseState.RightButton == ButtonState.Pressed;
 	}
-	
-
 }

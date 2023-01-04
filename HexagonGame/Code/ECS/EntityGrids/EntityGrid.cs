@@ -41,17 +41,19 @@ public struct EntityGrid
 
 	public bool IsValidCoordinate(int x, int y)
 	{
-		if(x < 0 || x > SizeX - 1)
+		if (x < 0 || x > SizeX - 1)
 		{
 			return false;
 		}
-		if(y < 0 || y > SizeY - 1)
+
+		if (y < 0 || y > SizeY - 1)
 		{
 			return false;
 		}
+
 		return true;
 	}
-	
+
 	public int GetEntity(VectorHex hex, int layer = TerrainLayer)
 	{
 		return GetEntity(hex.X, hex.Y, layer);
@@ -63,6 +65,7 @@ public struct EntityGrid
 		{
 			throw new ArgumentOutOfRangeException();
 		}
+
 		return Grid[x, y, layer];
 	}
 
@@ -77,7 +80,7 @@ public struct EntityGrid
 	{
 		return TileCoordinateToVector(hex.X, hex.Y);
 	}
-	
+
 	public (int xCoordinate, int yCoordinate) VectorToTileCoordinate(Vector2 vector)
 	{
 		var x = (int) Math.Ceiling(vector.X / TileSpriteWidth);
@@ -85,7 +88,7 @@ public struct EntityGrid
 
 		x = Math.Clamp(x, 0, SizeX);
 		y = Math.Clamp(y, 0, SizeY);
-		
+
 		return (x, y);
 	}
 }

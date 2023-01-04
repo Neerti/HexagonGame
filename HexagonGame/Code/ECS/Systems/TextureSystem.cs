@@ -6,7 +6,7 @@ namespace HexagonGame.ECS.Systems;
 public class TextureSystem
 {
 	public Dictionary<string, Texture2D> Textures;
-	
+
 	public void LoadContent(Game1 game)
 	{
 		Textures = new Dictionary<string, Texture2D>

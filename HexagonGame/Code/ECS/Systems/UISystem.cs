@@ -2,6 +2,7 @@ using System;
 using HexagonGame.ECS.Worlds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace HexagonGame.ECS.Systems;
 
@@ -19,29 +20,41 @@ public class UISystem
 	public void DrawDebugUI(World world, Game1 game, GameTime gameTime)
 	{
 		SpriteBatch.Begin();
+		var lineY = 10;
 
 		// Graphics.
 		var frameRate = Math.Round(1 / (float)gameTime.ElapsedGameTime.TotalSeconds);
-		SpriteBatch.DrawString(Font, $"FPS: {frameRate}, Viewport Size: {game.GraphicsDevice.Viewport.Width}x{game.GraphicsDevice.Viewport.Height}", new Vector2(10, 10), Color.Black);
+		SpriteBatch.DrawString(Font, $"FPS: {frameRate}, Viewport Size: {game.GraphicsDevice.Viewport.Width}x{game.GraphicsDevice.Viewport.Height}", new Vector2(10, lineY), Color.Black);
 		
 		// Camera.
 		var cameraPos = world.PositionComponents.Get(world.CameraEntity).Position;
-		SpriteBatch.DrawString(Font, $"Camera Pos: ({cameraPos.X}, {cameraPos.Y})", new Vector2(10, 25), Color.Black);
+		lineY += 15;
+		SpriteBatch.DrawString(Font, $"Camera Pos: ({cameraPos.X}, {cameraPos.Y})", new Vector2(10, lineY), Color.Black);
 		
 		// ECS.
-		SpriteBatch.DrawString(Font, $"Entities: {world.EntityTally}", new Vector2(10, 40), Color.Black);
+		lineY += 15;
+		SpriteBatch.DrawString(Font, $"Entities: {world.EntityTally}", new Vector2(10, lineY), Color.Black);
 		
 		// Map.
+		lineY += 15;
 		SpriteBatch.DrawString(Font,
 			$"Map Size: {world.Grid.SizeX}x{world.Grid.SizeY}  ({world.Grid.SizeX*world.Grid.SizeY} tiles) ",
-			new Vector2(10, 55),
+			new Vector2(10, lineY),
 			Color.Black
 			);
 		
-		// Time.
+		// Mouse control.
+		lineY += 15;
 		SpriteBatch.DrawString(Font,
-			$"Paused: {game.Paused} TickDelay: {game.TickDelay}/s {world.Calendar}",
-			new Vector2(10, 70),
+			$"Mouse Screen Position: {Mouse.GetState().Position}, Mouse World Position: {cameraPos + Mouse.GetState().Position.ToVector2()}",
+			new Vector2(10, lineY),
+			Color.Black);
+		
+		// Time.
+		lineY += 15;
+		SpriteBatch.DrawString(Font,
+			$"Paused: {game.Paused} TickDelay: {game.TickDelay}/s  Calendar: {world.Calendar}",
+			new Vector2(10, lineY),
 			Color.Black);
 
 		SpriteBatch.End();

@@ -32,7 +32,7 @@ public class InputSystem
 
 		if (IsLeftMouseButtonJustDown())
 		{
-			var clickedEntity = FindEntityOverMouse(game.World, Mouse.GetState());
+			var clickedEntity = ResolveMousePositionToEntity(game.World, Mouse.GetState());
 			if (clickedEntity != World.NullEntityID)
 			{
 				game.World.AppearanceComponents.Get(clickedEntity).SpriteColor = Color.Red;
@@ -137,7 +137,14 @@ public class InputSystem
 		_oldMouseState = Mouse.GetState();
 	}
 
-	public int FindEntityOverMouse(World world, MouseState state)
+	/// <summary>
+	/// Picks the entity possessing a position and appearance component, that the mouse is currently hovering over.
+	/// </summary>
+	/// <param name="world">The <see cref="World"/> that holds all mutable state for the game (or a particular unit test).</param>
+	/// <param name="state"><see cref="MouseState"/> of the player's mouse, generally obtained with <see cref="Mouse.GetState()"/>.</param>
+	/// <returns>Entity number for what the player has clicked on, or <see cref="World.NullEntityID"/> if no
+	/// entities could be resolved.</returns>
+	public int ResolveMousePositionToEntity(World world, MouseState state)
 	{
 		// Click detection is done in three stages.
 		// The first stage uses bounding boxes based on each entity's texture, to approximate what could've been 

@@ -1,0 +1,12 @@
+{
+	"template_name": "pine_tree",
+	"components": [
+		{
+			"type": "position"
+		},
+		{
+			"type": "appearance",
+			"sprite_color": [0, 255, 0]
+		}
+	]
+} 

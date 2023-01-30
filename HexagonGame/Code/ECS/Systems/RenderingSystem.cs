@@ -63,6 +63,7 @@ public class RenderingSystem
 					// Offset from the camera.
 					texturePos -= cameraPos;
 
+					var entity = world.Grid.Grid[x, y, z];
 					var appearanceComponent = world.AppearanceComponents.Get(world.Grid.Grid[x, y, z]);
 
 					// Move the texture down to pretend that the sprite origin is at the bottom left, instead of the top left.
@@ -80,7 +81,8 @@ public class RenderingSystem
 					spriteLayer = 1 - spriteLayer;
 
 					SpriteBatch.Draw(
-						appearanceComponent.SpriteTexture,
+						//appearanceComponent.SpriteTexture,
+						game.TextureSystem.Textures[appearanceComponent.TextureName],
 						texturePos,
 						null,
 						appearanceComponent.SpriteColor,
@@ -98,7 +100,8 @@ public class RenderingSystem
 
 					// Bounding box drawing.
 					// Code adapted from https://stackoverflow.com/a/13894313.
-					var rect = appearanceComponent.SpriteTexture.Bounds;
+					//var rect = appearanceComponent.SpriteTexture.Bounds;
+					var rect = game.TextureSystem.Textures[appearanceComponent.TextureName].Bounds;
 					var boundingColor = Color.Red;
 					var boundingLineSize = 1;
 					rect.Offset(texturePos);

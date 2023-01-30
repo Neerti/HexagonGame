@@ -1,21 +1,22 @@
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace HexagonGame.ECS.Components;
 
 public struct AppearanceComponent
 {
-	public Texture2D SpriteTexture;
 	public Color SpriteColor = Color.White;
+	public string TextureName;
 
-	public AppearanceComponent(Texture2D texture, Color color)
+	public AppearanceComponent(string textureName, Color color)
 	{
-		SpriteTexture = texture;
 		SpriteColor = color;
+		TextureName = textureName;
 	}
 
-	public AppearanceComponent(Texture2D texture)
+	public AppearanceComponent(AppearanceComponent prototype)
 	{
-		SpriteTexture = texture;
+		SpriteColor = prototype.SpriteColor;
+		TextureName = prototype.TextureName;
 	}
+	
 }

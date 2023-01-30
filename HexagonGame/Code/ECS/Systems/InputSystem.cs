@@ -32,7 +32,7 @@ public class InputSystem
 
 		if (IsLeftMouseButtonJustDown())
 		{
-			var clickedEntity = ResolveMousePositionToEntity(game.World, Mouse.GetState());
+			var clickedEntity = ResolveMousePositionToEntity(game, game.World, Mouse.GetState());
 			if (clickedEntity != World.NullEntityID)
 			{
 				game.World.AppearanceComponents.Get(clickedEntity).SpriteColor = Color.Red;
@@ -140,11 +140,12 @@ public class InputSystem
 	/// <summary>
 	/// Picks the entity possessing a position and appearance component, that the mouse is currently hovering over.
 	/// </summary>
+	/// <param name="game"></param>
 	/// <param name="world">The <see cref="World"/> that holds all mutable state for the game (or a particular unit test).</param>
 	/// <param name="state"><see cref="MouseState"/> of the player's mouse, generally obtained with <see cref="Mouse.GetState()"/>.</param>
 	/// <returns>Entity number for what the player has clicked on, or <see cref="World.NullEntityID"/> if no
 	/// entities could be resolved.</returns>
-	public int ResolveMousePositionToEntity(World world, MouseState state)
+	public int ResolveMousePositionToEntity(Game1 game, World world, MouseState state)
 	{
 		// Click detection is done in three stages.
 		// The first stage uses bounding boxes based on each entity's texture, to approximate what could've been 
@@ -174,7 +175,8 @@ public class InputSystem
 						continue;
 					}
 
-					var boundingBox = world.AppearanceComponents.Get(entity).SpriteTexture.Bounds;
+					//var boundingBox = world.AppearanceComponents.Get(entity).SpriteTexture.Bounds;
+					var boundingBox = game.TextureSystem.Textures[world.AppearanceComponents.Get(entity).TextureName].Bounds;
 					boundingBox.Offset(world.PositionComponents.Get(entity).Position);
 					//boundingBox.Offset(0, -boundingBox.Height);
 					if (boundingBox.Contains(mouseWorldPosition))
@@ -200,7 +202,8 @@ public class InputSystem
 
 		foreach (var entity in clickCandidates)
 		{
-			var texture = world.AppearanceComponents.Get(entity).SpriteTexture;
+			//var texture = world.AppearanceComponents.Get(entity).SpriteTexture;
+			var texture = game.TextureSystem.Textures[world.AppearanceComponents.Get(entity).TextureName];
 			var rawData = new Color[1];
 
 			var localClickCoordinates = mouseWorldPosition + -world.PositionComponents.Get(entity).Position;

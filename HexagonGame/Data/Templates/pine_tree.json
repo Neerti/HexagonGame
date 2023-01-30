@@ -1,12 +1,14 @@
-{
-	"template_name": "pine_tree",
-	"components": [
-		{
-			"type": "position"
+[
+	{
+		"Name": "PineTree",
+		"Appearance": {
+			"TextureName": "pine_tree",
+			"SpriteColor": {"R": 0, "G": 150, "B": 0, "A": 255}
 		},
-		{
-			"type": "appearance",
-			"sprite_color": [0, 255, 0]
+		"Position": { },
+		"Identity": {
+			"DisplayName": "Pine Tree",
+			"DisplayDesc": "Something should be put here but this is just an example I suppose."
 		}
-	]
-} 
+	}
+]

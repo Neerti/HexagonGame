@@ -1,5 +1,6 @@
 ﻿using System;
 using HexagonGame.ECS.Components;
+using HexagonGame.ECS.EntityFactories;
 using HexagonGame.ECS.EntityGrids;
 using HexagonGame.ECS.SparseSets;
 using HexagonGame.ECS.Systems;
@@ -22,6 +23,8 @@ public class Game1 : Game
 	public UISystem UISystem;
 	public TimeSystem TimeSystem;
 	public TextureSystem TextureSystem;
+
+	public EntityFactory EntityFactory;
 
 	public bool Paused = false;
 	public TimeSpan FractionalTick;
@@ -51,9 +54,12 @@ public class Game1 : Game
 		TextureSystem = new TextureSystem();
 		TextureSystem.LoadContent(this);
 
+
 		// Create the world.
 		// Later on this should be part of starting a new game or loading a save file.
 		World = new World();
+
+		EntityFactory = new EntityFactory();
 
 		var mapSize = (int) Math.Pow(2, 6);
 
@@ -66,8 +72,6 @@ public class Game1 : Game
 		// The map.
 		World.Grid = new EntityGrid(mapSize, mapSize);
 		World.Grid.PopulateGrid(World);
-
-		var hexagonTexture = TextureSystem.Textures["hexagon"];
 
 		for (var i = 0; i < World.Grid.SizeX; i++)
 		{
@@ -105,7 +109,7 @@ public class Game1 : Game
 					textureColor = Color.Red;
 				}
 
-				World.AppearanceComponents.Add(tileEntity, new AppearanceComponent(hexagonTexture, textureColor));
+				World.AppearanceComponents.Add(tileEntity, new AppearanceComponent("hexagon", textureColor));
 			}
 		}
 

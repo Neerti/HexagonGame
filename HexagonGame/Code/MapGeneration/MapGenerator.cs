@@ -73,9 +73,9 @@ public class MapGenerator
 				continue;
 			}
 
-			var treeEntity = world.NewEntity();
+			//var treeEntity = world.NewEntity();
+			var treeEntity = game.EntityFactory.EntityFromPrefab(world, "PineTree");
 			world.Grid.Grid[treeX, treeY, EntityGrid.ObjectLayer] = treeEntity;
-			Console.WriteLine($"Placed a tree at {treeX}, {treeY}.");
 
 			// This copypasta should go.
 			var newY = treeY * EntityGrid.TileSpriteHeight;
@@ -86,9 +86,12 @@ public class MapGenerator
 
 			//newY -= EntityGrid.TileSpriteDepth;
 
-			world.PositionComponents.Add(treeEntity, new PositionComponent(treeX * EntityGrid.TileSpriteWidth, newY));
-			world.AppearanceComponents.Add(treeEntity,
-				new AppearanceComponent(game.TextureSystem.Textures["pine_tree"], Color.Green));
+
+			world.PositionComponents.Get(treeEntity).Position = new Vector2(treeX * EntityGrid.TileSpriteWidth, newY);
+
+			//world.PositionComponents.Add(treeEntity, new PositionComponent(treeX * EntityGrid.TileSpriteWidth, newY));
+			//world.AppearanceComponents.Add(treeEntity,
+			//	new AppearanceComponent(game.TextureSystem.Textures["pine_tree"], Color.Green));
 		}
 	}
 }

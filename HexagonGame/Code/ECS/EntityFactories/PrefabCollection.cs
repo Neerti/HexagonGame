@@ -28,7 +28,7 @@ public class PrefabCollection
 	{
 		var workingDirectory = Environment.CurrentDirectory;
 		var projectDirectory = Directory.GetParent(workingDirectory)?.Parent?.Parent?.FullName;
-		var templateFilePaths = Directory.GetFiles($"{projectDirectory}/Data/Templates", "*.json");
+		var templateFilePaths = Directory.GetFiles($"{projectDirectory}/Data/Prefabs", "*.json");
 		
 		var jsonObjects = new Dictionary<string, JObject>();
 		

@@ -16,7 +16,7 @@ public class InputSystem
 	private MouseState _oldMouseState;
 	private Vector2 _fixedTogglePoint;
 
-	public void PollForInput(Game1 game, GameTime gameTime)
+	public void PollForInput(GameRoot game, GameTime gameTime)
 	{
 		// Don't do anything if the window isn't focused.
 		// Keyboard input isn't received, but mouse input could still come in and result in the game thinking the
@@ -145,7 +145,7 @@ public class InputSystem
 	/// <param name="state"><see cref="MouseState"/> of the player's mouse, generally obtained with <see cref="Mouse.GetState()"/>.</param>
 	/// <returns>Entity number for what the player has clicked on, or <see cref="World.NullEntityID"/> if no
 	/// entities could be resolved.</returns>
-	public int ResolveMousePositionToEntity(Game1 game, World world, MouseState state)
+	public int ResolveMousePositionToEntity(GameRoot game, World world, MouseState state)
 	{
 		// Click detection is done in three stages.
 		// The first stage uses bounding boxes based on each entity's texture, to approximate what could've been 

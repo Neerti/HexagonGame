@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace HexagonGame;
 
-public class Game1 : Game
+public class GameRoot : Game
 {
 	public GraphicsDeviceManager Graphics;
 
@@ -32,7 +32,7 @@ public class Game1 : Game
 	public float[] TickSpeedOptions = {2f, 1f, 0.5f, 0.1f, 0.01f};
 	public int TickSpeedIndex = 1;
 
-	public Game1()
+	public GameRoot()
 	{
 		Graphics = new GraphicsDeviceManager(this);
 		Content.RootDirectory = "Content";

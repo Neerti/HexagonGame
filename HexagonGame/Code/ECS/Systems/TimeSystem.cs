@@ -5,7 +5,7 @@ namespace HexagonGame.ECS.Systems;
 
 public class TimeSystem
 {
-	public void Tick(Game1 game, GameTime gameTime)
+	public void Tick(GameRoot game, GameTime gameTime)
 	{
 		game.FractionalTick += gameTime.ElapsedGameTime;
 		if (!(game.FractionalTick.TotalSeconds >= game.TickDelay))

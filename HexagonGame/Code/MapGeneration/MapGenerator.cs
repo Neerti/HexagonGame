@@ -59,7 +59,7 @@ public class MapGenerator
 		}
 	}
 
-	public void AddTrees(Game1 game, World world)
+	public void AddTrees(GameRoot game, World world)
 	{
 		// For now we're just gonna sprinkle trees in completely at random.
 		// Later on it would be better to do it on a per-biome basis, and perhaps use poisson distribution.

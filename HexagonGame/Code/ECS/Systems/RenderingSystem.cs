@@ -14,14 +14,14 @@ public class RenderingSystem
 
 	public bool DrawBoundingBoxes = true;
 
-	public void LoadContent(Game1 game)
+	public void LoadContent(GameRoot game)
 	{
 		SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 		BoundingBoxTexture = new Texture2D(game.GraphicsDevice, 1, 1);
 		BoundingBoxTexture.SetData(new[] {Color.White});
 	}
 
-	public void RenderTerrain(World world, Game1 game)
+	public void RenderTerrain(World world, GameRoot game)
 	{
 		var viewportBounds = game.GraphicsDevice.Viewport.Bounds;
 		var cameraPos = world.PositionComponents.Get(world.CameraEntity).Position;

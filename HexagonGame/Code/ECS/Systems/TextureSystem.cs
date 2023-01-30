@@ -7,7 +7,7 @@ public class TextureSystem
 {
 	public Dictionary<string, Texture2D> Textures;
 
-	public void LoadContent(Game1 game)
+	public void LoadContent(GameRoot game)
 	{
 		Textures = new Dictionary<string, Texture2D>
 		{

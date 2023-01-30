@@ -1,3 +1,3 @@
 ﻿
-using var game = new HexagonGame.Game1();
+using var game = new HexagonGame.GameRoot();
 game.Run();

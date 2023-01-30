@@ -11,13 +11,13 @@ public class UISystem
 	public SpriteFont Font;
 	public SpriteBatch SpriteBatch;
 
-	public void Initialize(Game1 game)
+	public void Initialize(GameRoot game)
 	{
 		Font = game.Content.Load<SpriteFont>("Fonts/debug_font");
 		SpriteBatch = new SpriteBatch(game.GraphicsDevice);
 	}
 
-	public void DrawDebugUI(World world, Game1 game, GameTime gameTime)
+	public void DrawDebugUI(World world, GameRoot game, GameTime gameTime)
 	{
 		SpriteBatch.Begin();
 		var lineY = 10;

@@ -35,6 +35,7 @@ public class GameRoot : Game
 	public GameRoot()
 	{
 		Graphics = new GraphicsDeviceManager(this);
+		Graphics.GraphicsProfile = GraphicsProfile.HiDef;
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
 		IsFixedTimeStep = false;

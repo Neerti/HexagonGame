@@ -69,6 +69,7 @@ public class GameRoot : Game
 		World.PositionComponents = new SparseSet<PositionComponent>(mapSize * mapSize + 1000);
 		World.TileAttributeComponents = new SparseSet<TileAttributeComponent>(mapSize * mapSize + 1000);
 		World.AppearanceComponents = new SparseSet<AppearanceComponent>(mapSize * mapSize + 1000);
+		World.LifecycleComponents = new SparseSet<LifecycleComponent>(1000);
 
 		// The map.
 		World.Grid = new EntityGrid(mapSize, mapSize);
@@ -124,8 +125,18 @@ public class GameRoot : Game
 		var posComponent = new PositionComponent(position: Vector2.Zero);
 		World.PositionComponents.Add(World.CameraEntity, posComponent);
 
+		// Make time exist.
 		World.Calendar = new DateTime();
+		World.Calendar = World.Calendar.AddYears(100);
 
+		// Spawn in the starting population.
+		for (int i = 0; i < 10; i++)
+		{
+			var pop = World.NewEntity();
+			var lifecycleComponent = new LifecycleComponent(World.Calendar.AddYears(-20));
+			World.LifecycleComponents.Add(pop, lifecycleComponent);
+		}
+		
 		base.Initialize();
 	}
 

@@ -23,6 +23,7 @@ public class GameRoot : Game
 	public UISystem UISystem;
 	public TimeSystem TimeSystem;
 	public TextureSystem TextureSystem;
+	public LifecycleSystem LifecycleSystem;
 
 	public EntityFactory EntityFactory;
 
@@ -54,6 +55,7 @@ public class GameRoot : Game
 		TimeSystem = new TimeSystem();
 		TextureSystem = new TextureSystem();
 		TextureSystem.LoadContent(this);
+		LifecycleSystem = new LifecycleSystem();
 
 		EntityFactory = new EntityFactory();
 		
@@ -86,6 +88,7 @@ public class GameRoot : Game
 			{
 				// Daily things go here.
 				Console.WriteLine("New day!");
+				LifecycleSystem.Process(this, World);
 			}
 
 			if (World.Calendar.Month != oldCalendar.Month)

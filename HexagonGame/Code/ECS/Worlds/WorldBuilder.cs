@@ -23,6 +23,7 @@ public class WorldBuilder
 		world.TileAttributeComponents = new SparseSet<TileAttributeComponent>(maxEntities);
 		world.AppearanceComponents = new SparseSet<AppearanceComponent>(maxEntities);
 		world.LifecycleComponents = new SparseSet<LifecycleComponent>(1000, maxEntities);
+		world.NeedsComponents = new SparseSet<NeedsComponent>(1000, maxEntities);
 		
 		// The map.
 		world.Grid = new EntityGrid(mapSizeX, mapSizeY);
@@ -89,9 +90,12 @@ public class WorldBuilder
 			var pop = world.NewEntity();
 			var lifecycleComponent = new LifecycleComponent(world.Calendar.AddYears(-20));
 			world.LifecycleComponents.Add(pop, lifecycleComponent);
+			var needsComponent = new NeedsComponent();
+			needsComponent.Needs.Add(NeedsTag.Calories, 2000);
+			world.NeedsComponents.Add(pop, needsComponent);
 		}
-		
-		
+
+
 		return world;
 	}
 }

@@ -21,6 +21,6 @@ public struct LifecycleComponent
 		Child,
 		Adolescent,
 		Adult,
-		Elder
+		Elderly
 	}
 }

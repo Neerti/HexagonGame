@@ -69,7 +69,7 @@ public class GameRoot : Game
 		World.PositionComponents = new SparseSet<PositionComponent>(mapSize * mapSize + 1000);
 		World.TileAttributeComponents = new SparseSet<TileAttributeComponent>(mapSize * mapSize + 1000);
 		World.AppearanceComponents = new SparseSet<AppearanceComponent>(mapSize * mapSize + 1000);
-		World.LifecycleComponents = new SparseSet<LifecycleComponent>(1000);
+		World.LifecycleComponents = new SparseSet<LifecycleComponent>(mapSize * mapSize + 1000);
 
 		// The map.
 		World.Grid = new EntityGrid(mapSize, mapSize);

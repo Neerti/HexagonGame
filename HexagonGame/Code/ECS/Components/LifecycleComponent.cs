@@ -2,7 +2,7 @@ using System;
 
 namespace HexagonGame.ECS.Components;
 
-public class LifecycleComponent
+public struct LifecycleComponent
 {
 
 	public DateTime Birthday;
@@ -11,10 +11,12 @@ public class LifecycleComponent
 	public LifecycleComponent(DateTime newBirthday)
 	{
 		Birthday = newBirthday;
+		CurrentAge = Ages.Undetermined;
 	}
 	
 	public enum Ages
 	{
+		Undetermined,
 		Baby,
 		Child,
 		Adolescent,

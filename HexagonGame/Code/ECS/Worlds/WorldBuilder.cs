@@ -24,6 +24,8 @@ public class WorldBuilder
 		world.AppearanceComponents = new SparseSet<AppearanceComponent>(maxEntities);
 		world.LifecycleComponents = new SparseSet<LifecycleComponent>(1000, maxEntities);
 		world.NeedsComponents = new SparseSet<NeedsComponent>(1000, maxEntities);
+		world.ResidentComponents = new SparseSet<ResidentComponent>(1000, maxEntities);
+		world.IdentityComponents = new SparseSet<IdentityComponent>(maxEntities);
 		
 		// The map.
 		world.Grid = new EntityGrid(mapSizeX, mapSizeY);
@@ -83,6 +85,24 @@ public class WorldBuilder
 		// Make time exist.
 		world.Calendar = new DateTime();
 		world.Calendar = world.Calendar.AddYears(100);
+		
+		// Make the first settlement.
+		var settlement = world.NewEntity();
+		var residentComponent = new ResidentComponent();
+		world.ResidentComponents.Add(settlement, residentComponent);
+		
+		// Some starting items.
+		for (int i = 0; i < 20; i++)
+		{
+			var item = world.NewEntity();
+			var itemIdentity = new IdentityComponent
+			{
+				Name = "Food",
+				Description = "This is a placeholder."
+			};
+			world.IdentityComponents.Add(item, itemIdentity);
+		}
+		
 
 		// Spawn in the starting population.
 		for (var i = 0; i < 10; i++)
@@ -90,8 +110,21 @@ public class WorldBuilder
 			var pop = world.NewEntity();
 			var lifecycleComponent = new LifecycleComponent(world.Calendar.AddYears(-20));
 			world.LifecycleComponents.Add(pop, lifecycleComponent);
+			
+			// and their needs.
 			var needsComponent = new NeedsComponent();
-			needsComponent.Needs.Add(NeedsTag.Calories, 2000);
+			
+			var foodNeed = new Need();
+			foodNeed.RequiredDaily = 2000;
+			foodNeed.MaxDeficiency = 21 * foodNeed.RequiredDaily;
+			needsComponent.Needs.Add(NeedsTag.Calories, foodNeed);
+
+			var waterNeed = new Need();
+			waterNeed.RequiredDaily = 2000;
+			waterNeed.MaxDeficiency = 3 * waterNeed.RequiredDaily;
+			needsComponent.Needs.Add(NeedsTag.Hydration, waterNeed);
+			
+			residentComponent.Residents.Add(pop);
 			world.NeedsComponents.Add(pop, needsComponent);
 		}
 

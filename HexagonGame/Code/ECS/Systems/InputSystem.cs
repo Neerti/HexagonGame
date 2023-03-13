@@ -145,7 +145,7 @@ public class InputSystem : BaseSystem<World, float>
 						pos.WorldPosition += movementDirection * cameraSpeed * f;
 						cam.AzimuthAngle += azimuthDirection * f;
 						cam.PolarAngle += polarDirection * f;
-						cam.Radius += radiusDirection * f;
+						cam.Radius += radiusDirection * f * 10;
 					}
 				);
 			}

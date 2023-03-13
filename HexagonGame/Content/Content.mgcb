@@ -130,7 +130,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Models/cube.fbx
 
-#begin Models/hexagon_flat.fbx
+#begin Models/hexagon_flat.obj
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -147,9 +147,9 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:Models/hexagon_flat.fbx
+/build:Models/hexagon_flat.obj
 
-#begin Models/hexagon.fbx
+#begin Models/hexagon.obj
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -166,5 +166,5 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:Models/hexagon.fbx
+/build:Models/hexagon.obj
 

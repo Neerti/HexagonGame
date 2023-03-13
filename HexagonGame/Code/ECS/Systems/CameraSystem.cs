@@ -20,7 +20,7 @@ public class CameraSystem : BaseSystem<World, float>
 		World.Query(in _desc, (ref Position pos, ref Camera camera) =>
 			{
 				pos.WorldPosition = new Vector3(0, 0, 0);
-				camera.Radius = 20;
+				camera.Radius = 10;
 				camera.PolarAngle = MathHelper.ToRadians(45);
 				camera.AzimuthAngle = MathHelper.ToRadians(90);
 			}

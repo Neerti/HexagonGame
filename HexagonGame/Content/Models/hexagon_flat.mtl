@@ -1,7 +1,7 @@
-# Blender 3.4.1 MTL File: 'hexagon.blend'
+# Blender 3.4.1 MTL File: 'hexagon_flat.blend'
 # www.blender.org
 
-newmtl Material.001
+newmtl Material
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000

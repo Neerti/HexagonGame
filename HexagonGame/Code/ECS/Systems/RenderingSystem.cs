@@ -17,13 +17,28 @@ public class RenderingSystem : BaseSystem<World, float>
     private Matrix _projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 400f, 0.1f, 100f);
     private GraphicsDevice _graphics;
 
+
+    private float _tileSize = .5f;
+    private float _tileHeight;
+    private float _tileWidth;
+    private float _tileHorizontalSpacing;
+    private float _tileVerticalSpacing;
+
     public RenderingSystem(GameRoot root, World world) : base(world)
     {
         _spriteBatch = new SpriteBatch(root.GraphicsDevice);
-        _testModel = root.Content.Load<Model>("Models/hexagon_flat");
+        _testModel = root.Content.Load<Model>("Models/hexagon");
         _graphics = root.GraphicsDevice;
     }
     private QueryDescription _cameraDescription = new QueryDescription().WithAll<Position, Camera>();
+
+    public override void Initialize()
+    {
+        _tileHeight = (float) (Math.Sqrt(3) * _tileSize);
+        _tileWidth = 2 * _tileSize;
+        _tileHorizontalSpacing = (3f / 4f) * _tileWidth;
+        _tileVerticalSpacing = _tileHeight;
+    }
 
     public override void Update(in float deltaTime)
     {
@@ -38,21 +53,27 @@ public class RenderingSystem : BaseSystem<World, float>
             }
         );
 
-        for (var i = 0; i < 5; i++)
+        _graphics.DepthStencilState = new DepthStencilState { DepthBufferEnable = true };
+        for (var i = 0; i < 20; i++)
         {
-            foreach (var mesh in _testModel.Meshes)
+            for (var j = 0; j < 20; j++)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (var mesh in _testModel.Meshes)
                 {
-                    effect.World = Matrix.CreateTranslation(new Vector3(i * 2, 0, 0)) * Matrix.CreateRotationX(MathHelper.ToRadians(-90));
-                    //effect.World = Matrix.CreateTranslation(new Vector3(i, 0, 0));
-                    effect.View = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
-                    //effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 10), Vector3.Zero, Vector3.Up);
-                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45),
-                        (float)_graphics.Viewport.Width / _graphics.Viewport.Height, 0.1f, 500f);
+                    foreach (BasicEffect effect in mesh.Effects)
+                    {
+                        var newX = i * _tileHorizontalSpacing;
+                        var newZ = (j * _tileVerticalSpacing) + (i % 2 == 0 ? _tileVerticalSpacing * 0.5f : 0);
+                        effect.World = Matrix.CreateTranslation(new Vector3(newX, 0, newZ));
+                        effect.View = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
+                        effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45),
+                            (float)_graphics.Viewport.Width / _graphics.Viewport.Height, 0.1f, 500f);
+                        effect.EnableDefaultLighting();
+                    }
+                    mesh.Draw();
                 }
-                mesh.Draw();
             }
+
         }
         
 

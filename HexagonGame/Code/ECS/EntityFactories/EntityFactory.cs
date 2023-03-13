@@ -19,7 +19,7 @@ public class EntityFactory
 		PrefabCollection = new PrefabCollection();
 	}
 	
-	public int EntityFromPrefab(World world, string prefabName)
+	public int EntityFromPrefab(OldWorld oldWorld, string prefabName)
 	{
 		// This might be slow if a lot of prefabs get generated.
 		if (!PrefabCollection.Prefabs.ContainsKey(prefabName))
@@ -28,25 +28,25 @@ public class EntityFactory
 		}
 		var prefab = PrefabCollection.Prefabs[prefabName];
 
-		var entity = world.NewEntity();
+		var entity = oldWorld.NewEntity();
 
 		// This will get unmanageable as more components are added.
 		if (prefab.PositionComponent.HasValue)
 		{
 			var component = new PositionComponent(prefab.PositionComponent.Value);
-			world.PositionComponents.Add(entity, component);
+			oldWorld.PositionComponents.Add(entity, component);
 		}
 
 		if (prefab.AppearanceComponent.HasValue)
 		{
 			var component = new AppearanceComponent(prefab.AppearanceComponent.Value);
-			world.AppearanceComponents.Add(entity, component);
+			oldWorld.AppearanceComponents.Add(entity, component);
 		}
 		
 		if (prefab.TileAttributeComponent.HasValue)
 		{
 			var component = new TileAttributeComponent(prefab.TileAttributeComponent.Value);
-			world.TileAttributeComponents.Add(entity, component);
+			oldWorld.TileAttributeComponents.Add(entity, component);
 		}
 
 		return entity;

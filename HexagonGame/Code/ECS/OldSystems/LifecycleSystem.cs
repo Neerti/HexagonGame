@@ -17,14 +17,14 @@ public class LifecycleSystem : System
 		{LifecycleComponent.Ages.Elderly, 70}
 	};
 
-	public new void Process(GameRoot root, World world)
+	public new void Process(GameRoot root, OldWorld oldWorld)
 	{
-		for (var i = 0; i < world.LifecycleComponents.Count; i++)
+		for (var i = 0; i < oldWorld.LifecycleComponents.Count; i++)
 		{
-			var component = world.LifecycleComponents.Elements[i];
+			var component = oldWorld.LifecycleComponents.Elements[i];
 			
 			// Proof of concept code.
-			var age = (world.Calendar - component.Birthday).TotalDays / 365.25f; // This is pretty dumb.
+			var age = (oldWorld.Calendar - component.Birthday).TotalDays / 365.25f; // This is pretty dumb.
 			var currentAge = LifecycleComponent.Ages.Baby;
 			foreach (var pair in _ages)
 			{

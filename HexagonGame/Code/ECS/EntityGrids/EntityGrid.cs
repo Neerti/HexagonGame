@@ -28,13 +28,13 @@ public struct EntityGrid
 		Grid = new int[SizeX, SizeY, MaxLayers];
 	}
 
-	public void PopulateGrid(World world)
+	public void PopulateGrid(OldWorld oldWorld)
 	{
 		for (var x = 0; x < SizeX; x++)
 		{
 			for (var y = 0; y < SizeY; y++)
 			{
-				Grid[x, y, TerrainLayer] = world.NewEntity();
+				Grid[x, y, TerrainLayer] = oldWorld.NewEntity();
 			}
 		}
 	}

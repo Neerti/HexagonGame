@@ -23,7 +23,7 @@ public class MapGenerator
 		_random = new Random(newSeed + 1);
 	}
 
-	public void ApplyNoise(World world, EntityGrid grid)
+	public void ApplyNoise(OldWorld oldWorld, EntityGrid grid)
 	{
 		// Larger numbers make the map look bigger. Smaller ones have the opposite effect.
 		var noiseSamplingScale = 1f;
@@ -53,13 +53,13 @@ public class MapGenerator
 
 				// Apply height.
 				var heightValue = _heightNoise.GetNoise(noiseX, noiseY, noiseZ);
-				world.TileAttributeComponents.Get(grid.Grid[x, y, EntityGrid.TerrainLayer]).Height = heightValue;
+				oldWorld.TileAttributeComponents.Get(grid.Grid[x, y, EntityGrid.TerrainLayer]).Height = heightValue;
 				//Console.WriteLine(heightValue);
 			}
 		}
 	}
 
-	public void AddTrees(GameRoot game, World world)
+	public void AddTrees(GameRoot game, OldWorld oldWorld)
 	{
 		// For now we're just gonna sprinkle trees in completely at random.
 		// Later on it would be better to do it on a per-biome basis, and perhaps use poisson distribution.
@@ -67,15 +67,15 @@ public class MapGenerator
 		{
 			var treeX = _random.Next(50);
 			var treeY = _random.Next(50);
-			if (world.Grid.GetEntity(treeX, treeY, EntityGrid.ObjectLayer) != World.NullEntityID)
+			if (oldWorld.Grid.GetEntity(treeX, treeY, EntityGrid.ObjectLayer) != OldWorld.NullEntityID)
 			{
 				// Something is already there.
 				continue;
 			}
 
-			//var treeEntity = world.NewEntity();
-			var treeEntity = game.EntityFactory.EntityFromPrefab(world, "PineTree");
-			world.Grid.Grid[treeX, treeY, EntityGrid.ObjectLayer] = treeEntity;
+			//var treeEntity = oldWorld.NewEntity();
+			var treeEntity = game.EntityFactory.EntityFromPrefab(oldWorld, "PineTree");
+			oldWorld.Grid.Grid[treeX, treeY, EntityGrid.ObjectLayer] = treeEntity;
 
 			// This copypasta should go.
 			var newY = treeY * EntityGrid.TileSpriteHeight;
@@ -87,10 +87,10 @@ public class MapGenerator
 			//newY -= EntityGrid.TileSpriteDepth;
 
 
-			world.PositionComponents.Get(treeEntity).Position = new Vector2(treeX * EntityGrid.TileSpriteWidth, newY);
+			oldWorld.PositionComponents.Get(treeEntity).Position = new Vector2(treeX * EntityGrid.TileSpriteWidth, newY);
 
-			//world.PositionComponents.Add(treeEntity, new PositionComponent(treeX * EntityGrid.TileSpriteWidth, newY));
-			//world.AppearanceComponents.Add(treeEntity,
+			//oldWorld.PositionComponents.Add(treeEntity, new PositionComponent(treeX * EntityGrid.TileSpriteWidth, newY));
+			//oldWorld.AppearanceComponents.Add(treeEntity,
 			//	new AppearanceComponent(game.TextureSystem.Textures["pine_tree"], Color.Green));
 		}
 	}

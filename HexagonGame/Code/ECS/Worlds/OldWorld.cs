@@ -7,13 +7,13 @@ using HexagonGame.ECS.SparseSets;
 namespace HexagonGame.ECS.Worlds;
 
 /// <summary>
-/// The World object holds every entity and component in the game that currently exists.
+/// The OldWorld object holds every entity and component in the game that currently exists.
 /// Consequently, it holds all mutable state for a particular save game, and is the starting
 /// point for serialization and deserialization.
 /// Multiple Worlds can exist at once, however that is intended for unit testing only, to improve isolation.
-/// One World is used in normal gameplay.
+/// One OldWorld is used in normal gameplay.
 /// </summary>
-public class World
+public class OldWorld
 {
 	public List<int> Entities = new();
 	public int EntityTally = 1; // This starts at 1, and not 0, so that 0 will always be an empty entity.
@@ -24,9 +24,9 @@ public class World
 	public SparseSet<TileAttributeComponent> TileAttributeComponents;
 	public SparseSet<AppearanceComponent> AppearanceComponents;
 	public SparseSet<LifecycleComponent> LifecycleComponents;
-	public SparseSet<NeedsComponent> NeedsComponents;
-	public SparseSet<ResidentComponent> ResidentComponents;
-	public SparseSet<IdentityComponent> IdentityComponents;
+//	public SparseSet<NeedsComponent> NeedsComponents;
+//	public SparseSet<ResidentComponent> ResidentComponents;
+//	public SparseSet<IdentityComponent> IdentityComponents;
 
 	// EntityGrids are used to store map data.
 	// Multiple grids could be used at once, to store different maps, e.g. an underground level, or 

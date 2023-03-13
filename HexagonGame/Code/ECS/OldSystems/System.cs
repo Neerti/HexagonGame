@@ -6,5 +6,5 @@ public abstract class System
 {
 	public virtual void Initialize(GameRoot game) { return; }
 
-	public virtual void Process(GameRoot root, World world) { return; }
+	public virtual void Process(GameRoot root, OldWorld oldWorld) { return; }
 }

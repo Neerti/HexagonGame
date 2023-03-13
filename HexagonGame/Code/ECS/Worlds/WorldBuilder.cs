@@ -8,13 +8,13 @@ using Microsoft.Xna.Framework;
 namespace HexagonGame.ECS.Worlds;
 
 /// <summary>
-/// Creates a <see cref="World"/> instance.
+/// Creates a <see cref="OldWorld"/> instance.
 /// </summary>
 public class WorldBuilder
 {
-	public World NewWorld(GameRoot root, int mapSizeX, int mapSizeY)
+	public OldWorld NewWorld(GameRoot root, int mapSizeX, int mapSizeY)
 	{
-		var world = new World();
+		var world = new OldWorld();
 
 		// Set up the component holders.
 		// Might be good to add auto-resizing to the sparse sets.
@@ -23,9 +23,9 @@ public class WorldBuilder
 		world.TileAttributeComponents = new SparseSet<TileAttributeComponent>(maxEntities);
 		world.AppearanceComponents = new SparseSet<AppearanceComponent>(maxEntities);
 		world.LifecycleComponents = new SparseSet<LifecycleComponent>(1000, maxEntities);
-		world.NeedsComponents = new SparseSet<NeedsComponent>(1000, maxEntities);
-		world.ResidentComponents = new SparseSet<ResidentComponent>(1000, maxEntities);
-		world.IdentityComponents = new SparseSet<IdentityComponent>(maxEntities);
+	//	world.NeedsComponents = new SparseSet<NeedsComponent>(1000, maxEntities);
+	//	world.ResidentComponents = new SparseSet<ResidentComponent>(1000, maxEntities);
+	//	world.IdentityComponents = new SparseSet<IdentityComponent>(maxEntities);
 		
 		// The map.
 		world.Grid = new EntityGrid(mapSizeX, mapSizeY);
@@ -89,7 +89,7 @@ public class WorldBuilder
 		// Make the first settlement.
 		var settlement = world.NewEntity();
 		var residentComponent = new ResidentComponent();
-		world.ResidentComponents.Add(settlement, residentComponent);
+	//	world.ResidentComponents.Add(settlement, residentComponent);
 		
 		// Some starting items.
 		for (int i = 0; i < 20; i++)
@@ -100,7 +100,7 @@ public class WorldBuilder
 				Name = "Food",
 				Description = "This is a placeholder."
 			};
-			world.IdentityComponents.Add(item, itemIdentity);
+			//world.IdentityComponents.Add(item, itemIdentity);
 		}
 		
 
@@ -125,7 +125,7 @@ public class WorldBuilder
 			needsComponent.Needs.Add(NeedsTag.Hydration, waterNeed);
 			
 			residentComponent.Residents.Add(pop);
-			world.NeedsComponents.Add(pop, needsComponent);
+		//	world.NeedsComponents.Add(pop, needsComponent);
 		}
 
 

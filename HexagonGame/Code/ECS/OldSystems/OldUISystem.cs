@@ -1,62 +1,13 @@
 using System;
-using Arch.Core;
-using Arch.System;
-using HexagonGame.ECS.Components;
+using HexagonGame.ECS.Worlds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace HexagonGame.ECS.Systems;
 
-public class UISystem : BaseSystem<World, float>
+public class OldUISystem
 {
-	public SpriteFont Font;
-	public SpriteBatch SpriteBatch;
-	public GraphicsDevice GraphicsDevice;
-	public UISystem(GameRoot root, World world) : base(world)
-	{
-		Font = root.Content.Load<SpriteFont>("Fonts/debug_font");
-		SpriteBatch = new SpriteBatch(root.GraphicsDevice);
-		GraphicsDevice = root.GraphicsDevice;
-	}
-
-	public override void Update(in float deltaTime)
-	{
-		SpriteBatch.Begin();
-		
-		var lineY = 10;
-
-		// Graphics.
-		var frameRate = Math.Round(1 / deltaTime);
-		SpriteBatch.DrawString(Font,
-			$"FPS: {frameRate}, Viewport Size: {GraphicsDevice.Viewport.Width}x{GraphicsDevice.Viewport.Height}",
-			new Vector2(10, lineY), Color.Black);
-		
-		// Camera.
-		var cameraDesc = new QueryDescription().WithExclusive<Position, Camera>();
-		World.Query(in cameraDesc, (ref Position pos, ref Camera cam) =>
-			{
-				lineY += 15;
-				SpriteBatch.DrawString(Font, $"  - Azimuth angle: ({MathHelper.ToDegrees(cam.AzimuthAngle)} degrees)", new Vector2(10, lineY), Color.Black);
-				lineY += 15;
-				SpriteBatch.DrawString(Font, $"  - Polar angle: ({MathHelper.ToDegrees(cam.PolarAngle)} degrees)", new Vector2(10, lineY), Color.Black);
-				lineY += 15;
-				SpriteBatch.DrawString(Font, $"  - Radius: ({cam.Radius})", new Vector2(10, lineY), Color.Black);
-				
-				
-				lineY += 15;
-				SpriteBatch.DrawString(Font, $"Camera Point: ({pos.WorldPosition.X}, {pos.WorldPosition.Y}, {pos.WorldPosition.Z})", new Vector2(10, lineY),
-					Color.Black);
-				lineY += 15;
-				SpriteBatch.DrawString(Font, $"View Position: ({cam.ViewPosition.X}, {cam.ViewPosition.Y}, {cam.ViewPosition.Z})", new Vector2(10, lineY),
-					Color.Black);
-			}
-		);
-
-
-		SpriteBatch.End();
-	}
-}
-/*
 	public SpriteFont Font;
 	public SpriteBatch SpriteBatch;
 
@@ -111,4 +62,4 @@ public class UISystem : BaseSystem<World, float>
 
 		SpriteBatch.End();
 	}
-*/
+}

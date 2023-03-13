@@ -12,6 +12,6 @@ public class TimeSystem
 			return;
 
 		game.FractionalTick -= TimeSpan.FromSeconds(game.TickDelay);
-		game.World.Calendar = game.World.Calendar.AddHours(1);
+		game.OldWorld.Calendar = game.OldWorld.Calendar.AddHours(1);
 	}
 }

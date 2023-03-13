@@ -1,155 +1,83 @@
 using System;
-using HexagonGame.ECS.EntityGrids;
-using HexagonGame.ECS.Worlds;
+using Arch.Core;
+using Arch.Core.Extensions;
+using Arch.System;
+using HexagonGame.ECS.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace HexagonGame.ECS.Systems;
 
-public class RenderingSystem
+public class RenderingSystem : BaseSystem<World, float>
 {
-	public SpriteBatch SpriteBatch;
-	public Texture2D BoundingBoxTexture;
+    private SpriteBatch _spriteBatch;
+    private Model _testModel;
+    private Matrix _world = Matrix.CreateTranslation(new Vector3(0, 0, 0)) * Matrix.CreateRotationZ(MathHelper.ToRadians(30));
+    private Matrix _view = Matrix.CreateLookAt(new Vector3(0, 0, 10), new Vector3(0, 0, 0), Vector3.Up);
+    private Matrix _projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 400f, 0.1f, 100f);
+    private GraphicsDevice _graphics;
 
-	public bool DrawBoundingBoxes = true;
+    public RenderingSystem(GameRoot root, World world) : base(world)
+    {
+        _spriteBatch = new SpriteBatch(root.GraphicsDevice);
+        _testModel = root.Content.Load<Model>("Models/hexagon_flat");
+        _graphics = root.GraphicsDevice;
+    }
+    private QueryDescription _cameraDescription = new QueryDescription().WithAll<Position, Camera>();
 
-	public void LoadContent(GameRoot game)
-	{
-		SpriteBatch = new SpriteBatch(game.GraphicsDevice);
-		BoundingBoxTexture = new Texture2D(game.GraphicsDevice, 1, 1);
-		BoundingBoxTexture.SetData(new[] {Color.White});
-	}
+    public override void Update(in float deltaTime)
+    {
+        Vector3 cameraPosition = default;
+        Vector3 cameraTarget = default;
+        
+        var cameraDesc = new QueryDescription().WithExclusive<Position, Camera>();
+        World.Query(in cameraDesc, (ref Position pos, ref Camera cam) =>
+            {
+                cameraPosition = cam.ViewPosition;
+                cameraTarget = pos.WorldPosition;
+            }
+        );
 
-	public void RenderTerrain(World world, GameRoot game)
-	{
-		var viewportBounds = game.GraphicsDevice.Viewport.Bounds;
-		var cameraPos = world.PositionComponents.Get(world.CameraEntity).Position;
+        for (var i = 0; i < 5; i++)
+        {
+            foreach (var mesh in _testModel.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.World = Matrix.CreateTranslation(new Vector3(i * 2, 0, 0)) * Matrix.CreateRotationX(MathHelper.ToRadians(-90));
+                    //effect.World = Matrix.CreateTranslation(new Vector3(i, 0, 0));
+                    effect.View = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
+                    //effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 10), Vector3.Zero, Vector3.Up);
+                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45),
+                        (float)_graphics.Viewport.Width / _graphics.Viewport.Height, 0.1f, 500f);
+                }
+                mesh.Draw();
+            }
+        }
+        
 
-		// Round the camera's position to avoid subpixeling.
-		cameraPos = new Vector2(
-			(float) Math.Round(cameraPos.X, MidpointRounding.ToZero),
-			(float) Math.Round(cameraPos.Y, MidpointRounding.ToZero)
-		);
+        
+        
 
-		var topLeftCorner = new Vector2(
-			cameraPos.X + -200,
-			cameraPos.Y + -200
-		);
-		var bottomRightCorner = new Vector2(
-			cameraPos.X + viewportBounds.Width + 200,
-			cameraPos.Y + viewportBounds.Height + 200
-		);
-
-		var topLeftCornerTile = world.Grid.VectorToTileCoordinate(topLeftCorner);
-		var bottomRightCornerTile = world.Grid.VectorToTileCoordinate(bottomRightCorner);
-
-		for (var z = 0; z < EntityGrid.MaxLayers; z++)
-		{
-			SpriteBatch.Begin(SpriteSortMode.BackToFront);
-			for (var x = topLeftCornerTile.xCoordinate; x < bottomRightCornerTile.xCoordinate; x++)
-			{
-				for (var y = topLeftCornerTile.yCoordinate; y < bottomRightCornerTile.yCoordinate; y++)
-				{
-					// Get the position component.
-					// This adds a branch inside a loop so it probably hurts performance.
-					if (!world.PositionComponents.Contains(world.Grid.Grid[x, y, z]))
-					{
-						continue;
-					}
-
-					var texturePos = world.PositionComponents.Get(world.Grid.Grid[x, y, z]).Position;
-
-					// Offset from the camera.
-					texturePos -= cameraPos;
-
-					var entity = world.Grid.Grid[x, y, z];
-					var appearanceComponent = world.AppearanceComponents.Get(world.Grid.Grid[x, y, z]);
-
-					// Move the texture down to pretend that the sprite origin is at the bottom left, instead of the top left.
-					// This is done to support sprites taller than the tile size.
-					//texturePos = new Vector2(texturePos.X, texturePos.Y - appearanceComponent.SpriteTexture.Height);
-
-					var step = 1f / world.Grid.SizeY;
-
-					var spriteLayer = step * y;
-					if ((x & 1) == 1) // Odd tiles are moved down half a step.
-					{
-						spriteLayer += step / 2;
-					}
-
-					spriteLayer = 1 - spriteLayer;
-
-					SpriteBatch.Draw(
-						//appearanceComponent.SpriteTexture,
-						game.TextureSystem.Textures[appearanceComponent.TextureName],
-						texturePos,
-						null,
-						appearanceComponent.SpriteColor,
-						0f,
-						Vector2.Zero,
-						Vector2.One,
-						SpriteEffects.None,
-						spriteLayer
-					);
-
-					if (!DrawBoundingBoxes)
-					{
-						continue;
-					}
-
-					// Bounding box drawing.
-					// Code adapted from https://stackoverflow.com/a/13894313.
-					//var rect = appearanceComponent.SpriteTexture.Bounds;
-					var rect = game.TextureSystem.Textures[appearanceComponent.TextureName].Bounds;
-					var boundingColor = Color.Red;
-					var boundingLineSize = 1;
-					rect.Offset(texturePos);
-					if (rect.Contains(Mouse.GetState().Position))
-					{
-						boundingColor = Color.Green;
-						boundingLineSize++;
-					}
-
-					// Left line.
-					SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
-							rect.X,
-							rect.Y,
-							boundingLineSize,
-							rect.Height + boundingLineSize),
-						boundingColor
-					);
-
-					// Top line.
-					SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
-							rect.X,
-							rect.Y,
-							rect.Width + boundingLineSize,
-							boundingLineSize),
-						boundingColor
-					);
-
-					// Right line.
-					SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
-							rect.X + rect.Width,
-							rect.Y,
-							boundingLineSize,
-							rect.Height + boundingLineSize),
-						boundingColor
-					);
-
-					// Bottom line.
-					SpriteBatch.Draw(BoundingBoxTexture, new Rectangle(
-							rect.X,
-							rect.Y + rect.Height,
-							rect.Width + boundingLineSize,
-							boundingLineSize),
-						boundingColor
-					);
-				}
-			}
-
-			SpriteBatch.End();
-		}
-	}
+        base.Update(in deltaTime);
+    }
 }
+
+/*
+// BaseSystem provides several usefull methods for interacting and structuring systems
+public class MovementSystem : BaseSystem<World, float>{
+
+    private QueryDescription _desc = new QueryDescription().WithAll<Position, Velocity>();
+    public MovementSystem(World world) : base(world) {}
+    
+    // Can be called once per frame
+    public override void Update(in float deltaTime)
+    {
+        // Run query, can also run multiple queries inside the update
+        World.Query(in _desc, (ref Position pos, ref Velocity vel) => {
+            pos.X += vel.X;
+            pos.Y += vel.Y;
+        });  
+    }
+}
+*/

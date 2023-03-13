@@ -1,13 +1,12 @@
 ﻿using System;
-using HexagonGame.ECS.Components;
 using HexagonGame.ECS.EntityFactories;
-using HexagonGame.ECS.EntityGrids;
-using HexagonGame.ECS.SparseSets;
 using HexagonGame.ECS.Systems;
 using HexagonGame.ECS.Worlds;
-using HexagonGame.MapGeneration;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Arch.Core;
+using HexagonGame.Universes;
+using JetBrains.Annotations;
 
 namespace HexagonGame;
 
@@ -15,12 +14,14 @@ public class GameRoot : Game
 {
 	public GraphicsDeviceManager Graphics;
 
-	public World World;
+	[CanBeNull] public Universe Universe;
+
+	public OldWorld OldWorld;
 
 	public InputSystem InputSystem;
-	public RenderingSystem RenderingSystem;
-	public CameraSystem CameraSystem;
-	public UISystem UISystem;
+	public OldRenderingSystem OldRenderingSystem;
+	public OldCameraSystem OldCameraSystem;
+	public OldUISystem OldUISystem;
 	public TimeSystem TimeSystem;
 	public TextureSystem TextureSystem;
 	public LifecycleSystem LifecycleSystem;
@@ -47,11 +48,16 @@ public class GameRoot : Game
 		Window.AllowUserResizing = true;
 		Window.Title = "Hexagon";
 
-		// Systems init.
-		RenderingSystem = new RenderingSystem();
-		CameraSystem = new CameraSystem();
-		InputSystem = new InputSystem();
-		UISystem = new UISystem();
+		Universe = new Universe();
+		Universe.World = World.Create();
+		
+		Universe.Initialize(this);
+		
+
+		/*// Systems init.
+		OldRenderingSystem = new OldRenderingSystem();
+		OldCameraSystem = new OldCameraSystem();
+		OldUISystem = new OldUISystem();
 		TimeSystem = new TimeSystem();
 		TextureSystem = new TextureSystem();
 		TextureSystem.LoadContent(this);
@@ -59,11 +65,11 @@ public class GameRoot : Game
 
 		EntityFactory = new EntityFactory();
 		
-		// Create the world.
+		// Create the oldWorld.
 		var worldBuilder = new WorldBuilder();
 		
 		var mapSize = (int) Math.Pow(2, 6);
-		World = worldBuilder.NewWorld(this, mapSize, mapSize);
+		OldWorld = worldBuilder.NewWorld(this, mapSize, mapSize);*/
 
 		
 		base.Initialize();
@@ -71,54 +77,72 @@ public class GameRoot : Game
 
 	protected override void LoadContent()
 	{
-		RenderingSystem.LoadContent(this);
-		UISystem.Initialize(this);
+	//	OldRenderingSystem.LoadContent(this);
+	//	OldUISystem.Initialize(this);
 	}
 
 	protected override void Update(GameTime gameTime)
 	{
-		InputSystem.PollForInput(this, gameTime);
-
-		if (!Paused)
+		float deltaTime = (float)(gameTime.ElapsedGameTime.TotalMilliseconds / 1000);
+		if (Universe != null)
 		{
-			var oldCalendar = World.Calendar;
+			Universe.UpdateSystems.BeforeUpdate(in deltaTime);
+			Universe.UpdateSystems.Update(in deltaTime);
+			Universe.UpdateSystems.AfterUpdate(in deltaTime);
+		}
+		
+
+		/*if (!Paused)
+		{
+			var oldCalendar = OldWorld.Calendar;
 			// Every 'tick' advances the in-game time by an hour.
 			TimeSystem.Tick(this, gameTime);
-			if (World.Calendar.Day != oldCalendar.Day)
+			if (OldWorld.Calendar.Day != oldCalendar.Day)
 			{
 				// Daily things go here.
 				Console.WriteLine("New day!");
-				LifecycleSystem.Process(this, World);
+				LifecycleSystem.Process(this, OldWorld);
 			}
 
-			if (World.Calendar.Month != oldCalendar.Month)
+			if (OldWorld.Calendar.Month != oldCalendar.Month)
 			{
 				// Monthly things go here.
 				Console.WriteLine("New month!");
 			}
 
-			if (World.Calendar.Year != oldCalendar.Year)
+			if (OldWorld.Calendar.Year != oldCalendar.Year)
 			{
 				// Annual things go here.
 				Console.WriteLine("New year!");
 			}
-		}
+		}*/
 
 		base.Update(gameTime);
 	}
 
 	protected override void Draw(GameTime gameTime)
 	{
-		// Background.
+		float deltaTime = (float)(gameTime.ElapsedGameTime.TotalMilliseconds / 1000);
+
 		Graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+		
+		if (Universe != null)
+		{
+			Universe.DrawSystems.BeforeUpdate(in deltaTime);
+			Universe.DrawSystems.Update(in deltaTime);
+			Universe.DrawSystems.AfterUpdate(in deltaTime);
+		}
+
+		// Background.
+	
 
 		// Tile map.
-		RenderingSystem.RenderTerrain(World, this);
+	//	OldRenderingSystem.RenderTerrain(OldWorld, this);
 
 		// Things on the map.
 
 		// UI.
-		UISystem.DrawDebugUI(World, this, gameTime);
+	//	OldUISystem.DrawDebugUI(OldWorld, this, gameTime);
 
 		base.Draw(gameTime);
 	}

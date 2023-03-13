@@ -1,44 +1,39 @@
 using System;
-using System.Collections.Generic;
-using HexagonGame.ECS.EntityGrids;
-using HexagonGame.ECS.Worlds;
+using Arch.Core;
+using Arch.Core.Extensions;
+using Arch.System;
+using HexagonGame.ECS.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace HexagonGame.ECS.Systems;
 
-/// <summary>
-/// The InputSystem takes player input, and manipulates the game in response.
-/// </summary>
-public class InputSystem
+public class InputSystem : BaseSystem<World, float>
 {
+	private GameRoot _game;
 	private KeyboardState _oldKeyboardState;
 	private MouseState _oldMouseState;
 	private Vector2 _fixedTogglePoint;
+	public InputSystem(GameRoot root, World world) : base(world)
+	{
+		_game = root;
+	}
 
-	public void PollForInput(GameRoot game, GameTime gameTime)
+	public override void Update(in float deltaTime)
 	{
 		// Don't do anything if the window isn't focused.
 		// Keyboard input isn't received, but mouse input could still come in and result in the game thinking the
 		// user is trying to click on something off screen.
-		if (!game.IsActive)
+		if (!_game.IsActive)
 		{
 			return;
 		}
 
-		if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-		    Keyboard.GetState().IsKeyDown(Keys.Escape))
-			game.Exit();
-
-		if (IsLeftMouseButtonJustDown())
+		if (Keyboard.GetState().IsKeyDown(Keys.Escape))
 		{
-			var clickedEntity = ResolveMousePositionToEntity(game, game.World, Mouse.GetState());
-			if (clickedEntity != World.NullEntityID)
-			{
-				game.World.AppearanceComponents.Get(clickedEntity).SpriteColor = Color.Red;
-			}
+			_game.Exit();
 		}
-
+		
 		// Camera control.
 		// This should get spun off into a camera system later on so it can do things like easing.
 
@@ -59,40 +54,47 @@ public class InputSystem
 		if (Mouse.GetState().MiddleButton == ButtonState.Pressed)
 		{
 			var mousePos = Mouse.GetState().Position.ToVector2();
-			var cameraPos = game.World.PositionComponents.Get(game.World.CameraEntity).Position;
-			var newPos = new Vector2(
-				cameraPos.X - (mousePos.X - _fixedTogglePoint.X),
-				cameraPos.Y - (mousePos.Y - _fixedTogglePoint.Y)
+			
+			var cameraDesc = new QueryDescription().WithExclusive<Position, Camera>();
+			World.Query(in cameraDesc, (ref Position pos, ref Camera cam) =>
+				{
+					var newPos = new Vector2(
+						pos.WorldPosition.X - (mousePos.X - _fixedTogglePoint.X),
+						pos.WorldPosition.Z - (mousePos.Y - _fixedTogglePoint.Y)
+					);
+					
+					pos.WorldPosition = new Vector3(newPos.X, 0, newPos.Y);
+				}
 			);
-			game.CameraSystem.SetCamera(game.World, newPos);
 			_fixedTogglePoint = mousePos;
 		}
 
 		else
 		{
 			// Keyboard camera control.
-			var movementDirection = Vector2.Zero;
-			var cameraSpeed = 500f;
+			// Translation.
+			var movementDirection = Vector3.Zero;
+			var cameraSpeed = 10f;
 
 			// TODO: Keybinding system so people can rebind keys.
 			if (Keyboard.GetState().IsKeyDown(Keys.W))
 			{
-				movementDirection += -Vector2.UnitY;
+				movementDirection += -Vector3.UnitZ;
 			}
 
 			else if (Keyboard.GetState().IsKeyDown(Keys.S))
 			{
-				movementDirection += Vector2.UnitY;
+				movementDirection += Vector3.UnitZ;
 			}
 
 			if (Keyboard.GetState().IsKeyDown(Keys.A))
 			{
-				movementDirection += -Vector2.UnitX;
+				movementDirection += -Vector3.UnitX;
 			}
 
 			else if (Keyboard.GetState().IsKeyDown(Keys.D))
 			{
-				movementDirection += Vector2.UnitX;
+				movementDirection += Vector3.UnitX;
 			}
 
 			if (Keyboard.GetState().IsKeyDown(Keys.LeftShift))
@@ -100,165 +102,63 @@ public class InputSystem
 				cameraSpeed *= 2;
 			}
 
-
-			if (movementDirection != Vector2.Zero)
+			// Yaw.
+			var azimuthDirection = 0;
+			if (Keyboard.GetState().IsKeyDown(Keys.Q))
 			{
-				game.CameraSystem.MoveCamera(game.World, movementDirection, cameraSpeed, gameTime);
-				game.World.PositionComponents.Get(game.World.CameraEntity).Position += movementDirection * cameraSpeed *
-					(float) gameTime.ElapsedGameTime.TotalSeconds;
+				azimuthDirection = -1;
+			}
+			else if (Keyboard.GetState().IsKeyDown(Keys.E))
+			{
+				azimuthDirection = 1;
+			}
+
+			// Pitch.
+			var polarDirection = 0;
+			if (Keyboard.GetState().IsKeyDown(Keys.R))
+			{
+				polarDirection = 1;
+			}
+			else if (Keyboard.GetState().IsKeyDown(Keys.F))
+			{
+				polarDirection = -1;
+			}
+			
+			// Zoom.
+			var radiusDirection = 0;
+			if (Keyboard.GetState().IsKeyDown(Keys.T))
+			{
+				radiusDirection = -1;
+			}
+			else if (Keyboard.GetState().IsKeyDown(Keys.G))
+			{
+				radiusDirection = 1;
+			}
+
+			// This might not be worth checking.
+			if (movementDirection != Vector3.Zero || azimuthDirection != 0 || polarDirection != 0 || radiusDirection != 0)
+			{
+				var cameraDesc = new QueryDescription().WithExclusive<Position, Camera>();
+				var f = deltaTime;
+				World.Query(in cameraDesc, (ref Position pos, ref Camera cam) =>
+					{
+						pos.WorldPosition += movementDirection * cameraSpeed * f;
+						cam.AzimuthAngle += azimuthDirection * f;
+						cam.PolarAngle += polarDirection * f;
+						cam.Radius += radiusDirection * f;
+					}
+				);
 			}
 		}
-
-
-		// Other keyboard input.
-		if (IsKeyJustDown(Keys.Space))
-		{
-			game.Paused = !game.Paused;
-		}
-
-		if (IsKeyJustDown(Keys.OemPlus))
-		{
-			game.TickSpeedIndex = Math.Min(++game.TickSpeedIndex, game.TickSpeedOptions.Length - 1);
-			game.TickDelay = game.TickSpeedOptions[game.TickSpeedIndex];
-		}
-
-		if (IsKeyJustDown(Keys.OemMinus))
-		{
-			game.TickSpeedIndex = Math.Max(--game.TickSpeedIndex, 0);
-			game.TickDelay = game.TickSpeedOptions[game.TickSpeedIndex];
-		}
-
-		if (IsKeyJustDown(Keys.B))
-		{
-			game.RenderingSystem.DrawBoundingBoxes = !game.RenderingSystem.DrawBoundingBoxes;
-		}
-
+		
 		_oldKeyboardState = Keyboard.GetState();
 		_oldMouseState = Mouse.GetState();
+			
 	}
-
-	/// <summary>
-	/// Picks the entity possessing a position and appearance component, that the mouse is currently hovering over.
-	/// </summary>
-	/// <param name="game"></param>
-	/// <param name="world">The <see cref="World"/> that holds all mutable state for the game (or a particular unit test).</param>
-	/// <param name="state"><see cref="MouseState"/> of the player's mouse, generally obtained with <see cref="Mouse.GetState()"/>.</param>
-	/// <returns>Entity number for what the player has clicked on, or <see cref="World.NullEntityID"/> if no
-	/// entities could be resolved.</returns>
-	public int ResolveMousePositionToEntity(GameRoot game, World world, MouseState state)
-	{
-		// Click detection is done in three stages.
-		// The first stage uses bounding boxes based on each entity's texture, to approximate what could've been 
-		// clicked on.
-		var mousePosition = state.Position.ToVector2();
-		var mouseWorldPosition = mousePosition + world.PositionComponents.Get(world.CameraEntity).Position;
-		const float offset = 128f;
-
-		var topLeftPosition = new Vector2(mouseWorldPosition.X - offset, mouseWorldPosition.Y - offset);
-		var bottomRightPosition = new Vector2(mouseWorldPosition.X + offset, mouseWorldPosition.Y + offset);
-
-		var topLeftCorner = world.Grid.VectorToTileCoordinate(topLeftPosition);
-		var bottomRightCorner = world.Grid.VectorToTileCoordinate(bottomRightPosition);
-
-		var clickCandidates = new List<int>();
-		var entityLayers = new Dictionary<int, int>();
-
-		for (var x = topLeftCorner.xCoordinate; x < bottomRightCorner.xCoordinate; x++)
-		{
-			for (var y = topLeftCorner.yCoordinate; y < bottomRightCorner.yCoordinate; y++)
-			{
-				for (var layer = 0; layer < EntityGrid.MaxLayers; layer++)
-				{
-					var entity = world.Grid.Grid[x, y, layer];
-					if (entity == World.NullEntityID)
-					{
-						continue;
-					}
-
-					//var boundingBox = world.AppearanceComponents.Get(entity).SpriteTexture.Bounds;
-					var boundingBox = game.TextureSystem.Textures[world.AppearanceComponents.Get(entity).TextureName].Bounds;
-					boundingBox.Offset(world.PositionComponents.Get(entity).Position);
-					//boundingBox.Offset(0, -boundingBox.Height);
-					if (boundingBox.Contains(mouseWorldPosition))
-					{
-						clickCandidates.Add(entity);
-						entityLayers[entity] = layer;
-					}
-				}
-			}
-		}
-
-		if (clickCandidates.Count == 0)
-		{
-			return World.NullEntityID;
-		}
-
-		// Second stage narrows down the possible entities with pixel transparency checking, 
-		// ruling out objects where the mouse was over a fully transparent pixel.
-		// This makes clicking pixel perfect, but is relatively expensive.
-		// Fortunately it only needs to check a few sprites due to stage one ruling out most other candidates.
-
-		var pixelPerfectCandidates = new List<int>();
-
-		foreach (var entity in clickCandidates)
-		{
-			//var texture = world.AppearanceComponents.Get(entity).SpriteTexture;
-			var texture = game.TextureSystem.Textures[world.AppearanceComponents.Get(entity).TextureName];
-			var rawData = new Color[1];
-
-			var localClickCoordinates = mouseWorldPosition + -world.PositionComponents.Get(entity).Position;
-			//	localClickCoordinates =
-			//		new Vector2((float)Math.Floor(localClickCoordinates.X), (float)Math.Floor(localClickCoordinates.Y));
-			var pixelRect = new Rectangle((int) localClickCoordinates.X, (int) localClickCoordinates.Y, 1, 1);
-			texture.GetData(0, pixelRect, rawData, 0, 1);
-			Console.WriteLine(rawData[0]);
-
-			// If the pixel is not transparent, it's still in the running.
-			if (rawData[0] != new Color())
-			{
-				pixelPerfectCandidates.Add(entity);
-			}
-		}
-
-		if (pixelPerfectCandidates.Count == 0)
-		{
-			Console.WriteLine("No entities in pixel perfect list.");
-			return World.NullEntityID;
-		}
-
-		// The third stage deals with overlapping sprites, based on a layer priority system.
-		// This prevents clicking on a tile if a tree occludes where it was clicked.
-
-		var thing = new Dictionary<int, float>();
-		// The rules for priority are;
-		//	* UI elements have priority over any map element.
-		//	* Entity on a higher entity grid layer have priority over those on a lower layer.
-		//		E.g. trees are clicked before tiles if they overlap.
-		//	* Entities that are closer towards the bottom of the screen have priority over those towards the top.
-		foreach (var entity in pixelPerfectCandidates)
-		{
-			var entityPosition = world.PositionComponents.Get(entity).Position;
-			var entityScore = entityPosition.Y;
-
-			entityScore *= entityLayers[entity] + 1;
-
-			thing[entity] = entityScore;
-		}
-
-		var winner = World.NullEntityID;
-		var highestScore = float.NegativeInfinity;
-
-		foreach (var pair in thing)
-		{
-			if (!(pair.Value > highestScore)) continue;
-			winner = pair.Key;
-			highestScore = pair.Value;
-		}
-
-		return winner;
-	}
-
-	/// <summary>
+	
+	
+	
+		/// <summary>
 	/// Tests if a key was just pressed. Will only be true once per key press, even if held down.
 	/// </summary>
 	/// <param name="key"><see cref="Keys"/> enum corresponding to the key to test for.</param>

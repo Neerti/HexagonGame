@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace HexagonGame.ECS.Systems;
 
-public class RenderingSystem : BaseSystem<World, float>
+public class RenderingSystem : BaseSystem<World, GameTime>
 {
     private SpriteBatch _spriteBatch;
     private Model _testModel;
@@ -40,7 +40,7 @@ public class RenderingSystem : BaseSystem<World, float>
         _tileVerticalSpacing = _tileHeight;
     }
 
-    public override void Update(in float deltaTime)
+    public override void Update(in GameTime gameTime)
     {
         Vector3 cameraPosition = default;
         Vector3 cameraTarget = default;
@@ -79,11 +79,5 @@ public class RenderingSystem : BaseSystem<World, float>
             }
 
         }
-        
-
-        
-        
-
-        base.Update(in deltaTime);
     }
 }

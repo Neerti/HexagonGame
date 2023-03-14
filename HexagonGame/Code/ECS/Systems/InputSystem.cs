@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace HexagonGame.ECS.Systems;
 
-public class InputSystem : BaseSystem<World, float>
+public class InputSystem : BaseSystem<World, GameTime>
 {
 	private GameRoot _game;
 	private KeyboardState _oldKeyboardState;
@@ -20,7 +20,7 @@ public class InputSystem : BaseSystem<World, float>
 		_game = root;
 	}
 
-	public override void Update(in float deltaTime)
+	public override void Update(in GameTime gameTime)
 	{
 		// Don't do anything if the window isn't focused.
 		// Keyboard input isn't received, but mouse input could still come in and result in the game thinking the
@@ -146,7 +146,7 @@ public class InputSystem : BaseSystem<World, float>
 			if (movementDirection != Vector3.Zero || azimuthDirection != 0 || polarDirection != 0 || radiusDirection != 0)
 			{
 				var cameraDesc = new QueryDescription().WithExclusive<Position, Camera>();
-				var f = deltaTime;
+				var f = (float)gameTime.ElapsedGameTime.TotalSeconds;
 				World.Query(in cameraDesc, (ref Position pos, ref Camera cam) =>
 					{
 						pos.WorldPosition += movementDirection * cameraSpeed * f;

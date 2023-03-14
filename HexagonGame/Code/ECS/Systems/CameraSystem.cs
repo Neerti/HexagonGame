@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 
 namespace HexagonGame.ECS.Systems;
 
-public class CameraSystem : BaseSystem<World, float>
+public class CameraSystem : BaseSystem<World, GameTime>
 {
 	private readonly QueryDescription _desc = new QueryDescription().WithExclusive<Position, Camera>();
 	
@@ -27,7 +27,7 @@ public class CameraSystem : BaseSystem<World, float>
 		);
 	}
 
-	public override void Update(in float deltaTime)
+	public override void Update(in GameTime gameTime)
 	{
 		World.Query(in _desc, (ref Position pos, ref Camera cam) =>
 			{

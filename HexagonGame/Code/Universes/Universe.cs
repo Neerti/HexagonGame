@@ -3,6 +3,7 @@ using Arch.Core;
 using Arch.System;
 using HexagonGame.ECS.Components;
 using HexagonGame.ECS.Systems;
+using Microsoft.Xna.Framework;
 
 namespace HexagonGame.Universes;
 /// <summary>
@@ -15,8 +16,8 @@ public class Universe
 {
 	public World World;
 
-	public Group<float> UpdateSystems;
-	public Group<float> DrawSystems;
+	public Group<GameTime> UpdateSystems;
+	public Group<GameTime> DrawSystems;
 
 	public DateTime Calendar;
 
@@ -26,10 +27,10 @@ public class Universe
 	{
 		CameraEntity = World.Create<Position, Camera>();
 		
-		UpdateSystems = new Group<float>(
+		UpdateSystems = new Group<GameTime>(
 			new InputSystem(root, World),
 			new CameraSystem(root, World));
-		DrawSystems = new Group<float>(
+		DrawSystems = new Group<GameTime>(
 			new RenderingSystem(root, World),
 			new UISystem(root, World));
 		

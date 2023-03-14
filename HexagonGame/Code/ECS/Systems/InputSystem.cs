@@ -3,6 +3,7 @@ using Arch.Core;
 using Arch.Core.Extensions;
 using Arch.System;
 using HexagonGame.ECS.Components;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -71,6 +72,12 @@ public class InputSystem : BaseSystem<World, float>
 
 		else
 		{
+			// Don't do anything if ImGui has 'focus'.
+			if (ImGui.GetIO().WantCaptureKeyboard)
+			{
+				return;
+			}
+			
 			// Keyboard camera control.
 			// Translation.
 			var movementDirection = Vector3.Zero;

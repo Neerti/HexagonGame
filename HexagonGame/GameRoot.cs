@@ -6,6 +6,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Arch.Core;
 using HexagonGame.Universes;
+using ImGuiNET;
+using ImGuiNET.SampleProgram.XNA;
+using Num = System.Numerics;
 using JetBrains.Annotations;
 
 namespace HexagonGame;
@@ -13,6 +16,8 @@ namespace HexagonGame;
 public class GameRoot : Game
 {
 	public GraphicsDeviceManager Graphics;
+
+	public ImGuiRenderer ImGuiRenderer;
 
 	[CanBeNull] public Universe Universe;
 
@@ -38,6 +43,8 @@ public class GameRoot : Game
 	{
 		Graphics = new GraphicsDeviceManager(this);
 		Graphics.GraphicsProfile = GraphicsProfile.HiDef;
+		Graphics.PreferredBackBufferWidth = 1024;
+		Graphics.PreferredBackBufferHeight = 768;
 		Content.RootDirectory = "Content";
 		IsMouseVisible = true;
 		IsFixedTimeStep = false;
@@ -47,6 +54,10 @@ public class GameRoot : Game
 	{
 		Window.AllowUserResizing = true;
 		Window.Title = "Hexagon";
+		Window.ClientSizeChanged += OnResize;
+
+		ImGuiRenderer = new ImGuiRenderer(this);
+		ImGuiRenderer.RebuildFontAtlas();
 
 		Universe = new Universe();
 		Universe.World = World.Create();
@@ -122,6 +133,7 @@ public class GameRoot : Game
 
 	protected override void Draw(GameTime gameTime)
 	{
+		ImGuiRenderer.BeforeLayout(gameTime);
 		float deltaTime = (float)(gameTime.ElapsedGameTime.TotalMilliseconds / 1000);
 
 		Graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -132,6 +144,27 @@ public class GameRoot : Game
 			Universe.DrawSystems.Update(in deltaTime);
 			Universe.DrawSystems.AfterUpdate(in deltaTime);
 		}
+		
+		
+		ImGuiLayout();
+		
+		ImGuiRenderer.AfterLayout();
+		
+		/*
+		 *            GraphicsDevice.Clear(new Color(clear_color.X, clear_color.Y, clear_color.Z));
+		   
+		   // Call BeforeLayout first to set things up
+		   _imGuiRenderer.BeforeLayout(gameTime);
+		   
+		   // Draw our UI
+		   ImGuiLayout();
+		   
+		   // Call AfterLayout now to finish up and draw all the things
+		   _imGuiRenderer.AfterLayout();
+		   
+		   base.Draw(gameTime);
+		 * 
+		 */
 
 		// Background.
 	
@@ -145,5 +178,56 @@ public class GameRoot : Game
 	//	OldUISystem.DrawDebugUI(OldWorld, this, gameTime);
 
 		base.Draw(gameTime);
+	}
+	
+	
+	// Direct port of the example at https://github.com/ocornut/imgui/blob/master/examples/sdl_opengl2_example/main.cpp
+	private float f = 0.0f;
+
+	private bool show_test_window = false;
+	private bool show_another_window = false;
+	private Num.Vector3 clear_color = new Num.Vector3(114f / 255f, 144f / 255f, 154f / 255f);
+	private byte[] _textBuffer = new byte[100];
+	
+	protected virtual void ImGuiLayout()
+	{
+		// 1. Show a simple window
+		// Tip: if we don't call ImGui.Begin()/ImGui.End() the widgets appears in a window automatically called "Debug"
+		{
+			ImGui.Text("Hello, world!");
+			ImGui.SliderFloat("float", ref f, 0.0f, 1.0f, string.Empty);
+			ImGui.ColorEdit3("clear color", ref clear_color);
+			if (ImGui.Button("Test Window")) show_test_window = !show_test_window;
+			if (ImGui.Button("Another Window")) show_another_window = !show_another_window;
+			ImGui.Text(string.Format("Application average {0:F3} ms/frame ({1:F1} FPS)", 1000f / ImGui.GetIO().Framerate, ImGui.GetIO().Framerate));
+
+			ImGui.InputText("Text input", _textBuffer, 100);
+
+			ImGui.Text("Texture sample");
+			//ImGui.Image(_imGuiTexture, new Num.Vector2(300, 150), Num.Vector2.Zero, Num.Vector2.One, Num.Vector4.One, Num.Vector4.One); // Here, the previously loaded texture is used
+		}
+
+		// 2. Show another simple window, this time using an explicit Begin/End pair
+		if (show_another_window)
+		{
+			ImGui.SetNextWindowSize(new Num.Vector2(200, 100), ImGuiCond.FirstUseEver);
+			ImGui.Begin("Another Window", ref show_another_window);
+			ImGui.Text("Hello");
+			ImGui.End();
+		}
+
+		// 3. Show the ImGui test window. Most of the sample code is in ImGui.ShowTestWindow()
+		if (show_test_window)
+		{
+			ImGui.SetNextWindowPos(new Num.Vector2(650, 20), ImGuiCond.FirstUseEver);
+			ImGui.ShowDemoWindow(ref show_test_window);
+		}
+	}
+
+	public void OnResize(object sender, EventArgs e)
+	{
+		Graphics.PreferredBackBufferHeight = GraphicsDevice.Viewport.Height;
+		Graphics.PreferredBackBufferWidth = GraphicsDevice.Viewport.Width;
+		Graphics.ApplyChanges();
 	}
 }

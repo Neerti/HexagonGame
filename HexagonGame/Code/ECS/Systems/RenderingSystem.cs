@@ -69,6 +69,10 @@ public class RenderingSystem : BaseSystem<World, float>
                         effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45),
                             (float)_graphics.Viewport.Width / _graphics.Viewport.Height, 0.1f, 500f);
                         effect.EnableDefaultLighting();
+                        effect.FogEnabled = true;
+                        effect.FogColor = Color.CornflowerBlue.ToVector3();
+                        effect.FogStart = 15f;
+                        effect.FogEnd = 20f;
                     }
                     mesh.Draw();
                 }

@@ -87,22 +87,3 @@ public class RenderingSystem : BaseSystem<World, float>
         base.Update(in deltaTime);
     }
 }
-
-/*
-// BaseSystem provides several usefull methods for interacting and structuring systems
-public class MovementSystem : BaseSystem<World, float>{
-
-    private QueryDescription _desc = new QueryDescription().WithAll<Position, Velocity>();
-    public MovementSystem(World world) : base(world) {}
-    
-    // Can be called once per frame
-    public override void Update(in float deltaTime)
-    {
-        // Run query, can also run multiple queries inside the update
-        World.Query(in _desc, (ref Position pos, ref Velocity vel) => {
-            pos.X += vel.X;
-            pos.Y += vel.Y;
-        });  
-    }
-}
-*/

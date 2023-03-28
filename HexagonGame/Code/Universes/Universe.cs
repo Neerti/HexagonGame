@@ -3,6 +3,7 @@ using Arch.Core;
 using Arch.System;
 using HexagonGame.ECS.Components;
 using HexagonGame.ECS.Systems;
+using HexagonGame.Maps;
 using Microsoft.Xna.Framework;
 
 namespace HexagonGame.Universes;
@@ -23,6 +24,8 @@ public class Universe
 
 	public Entity CameraEntity;
 
+	public LogicalMap Map;
+
 	public void Initialize(GameRoot root)
 	{
 		CameraEntity = World.Create<Position, Camera>();
@@ -36,6 +39,8 @@ public class Universe
 		
 		UpdateSystems.Initialize();
 		DrawSystems.Initialize();
+		
+		Map = new MapBuilder().NewMap(World, 64, 2, 64);
 	}
 
 	public void Cleanup(GameRoot root)

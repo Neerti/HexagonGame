@@ -76,7 +76,7 @@ public class GameRoot : Game
 		var mapSize = (int) Math.Pow(2, 6);
 		OldWorld = worldBuilder.NewWorld(this, mapSize, mapSize);*/
 
-		
+
 		base.Initialize();
 	}
 
@@ -179,5 +179,15 @@ public class GameRoot : Game
 		Graphics.PreferredBackBufferHeight = GraphicsDevice.Viewport.Height;
 		Graphics.PreferredBackBufferWidth = GraphicsDevice.Viewport.Width;
 		Graphics.ApplyChanges();
+	}
+
+	protected override void EndRun()
+	{
+		base.EndRun();
+
+		if (Universe == null) return;
+		World.Destroy(Universe.World);
+		Universe.UpdateSystems.Dispose();
+		Universe.DrawSystems.Dispose();
 	}
 }

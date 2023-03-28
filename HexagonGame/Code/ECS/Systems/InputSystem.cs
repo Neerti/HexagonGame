@@ -11,13 +11,13 @@ namespace HexagonGame.ECS.Systems;
 
 public class InputSystem : BaseSystem<World, GameTime>
 {
-	private GameRoot _game;
+	private GameRoot _root;
 	private KeyboardState _oldKeyboardState;
 	private MouseState _oldMouseState;
 	private Vector2 _fixedTogglePoint;
 	public InputSystem(GameRoot root, World world) : base(world)
 	{
-		_game = root;
+		_root = root;
 	}
 
 	public override void Update(in GameTime gameTime)
@@ -25,14 +25,14 @@ public class InputSystem : BaseSystem<World, GameTime>
 		// Don't do anything if the window isn't focused.
 		// Keyboard input isn't received, but mouse input could still come in and result in the game thinking the
 		// user is trying to click on something off screen.
-		if (!_game.IsActive)
+		if (!_root.IsActive)
 		{
 			return;
 		}
 
 		if (Keyboard.GetState().IsKeyDown(Keys.Escape))
 		{
-			_game.Exit();
+			_root.Exit();
 		}
 		
 		// Camera control.

@@ -3,6 +3,8 @@ using Arch.Core;
 using Arch.Core.Extensions;
 using Arch.System;
 using HexagonGame.ECS.Components;
+using HexagonGame.Maps;
+using HexagonGame.Universes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -24,11 +26,14 @@ public class RenderingSystem : BaseSystem<World, GameTime>
     private float _tileHorizontalSpacing;
     private float _tileVerticalSpacing;
 
+    private Universe _universe;
+
     public RenderingSystem(GameRoot root, World world) : base(world)
     {
         _spriteBatch = new SpriteBatch(root.GraphicsDevice);
         _testModel = root.Content.Load<Model>("Models/hexagon");
         _graphics = root.GraphicsDevice;
+        _universe = root.Universe;
     }
     private QueryDescription _cameraDescription = new QueryDescription().WithAll<Position, Camera>();
 
@@ -54,7 +59,45 @@ public class RenderingSystem : BaseSystem<World, GameTime>
         );
 
         _graphics.DepthStencilState = new DepthStencilState { DepthBufferEnable = true };
-        for (var i = 0; i < 20; i++)
+        for (var x = 0; x < _universe.Map.SizeX; x++)
+        {
+            for (var y = 0; y < _universe.Map.SizeY; y++)
+            {
+                for (var z = 0; z < _universe.Map.SizeZ; z++)
+                {
+                    for (var l = 0; l < LogicalMap.MaxLayers; l++)
+                    {
+                        var entity = _universe.Map.Grid[x, y, z, l];
+                        if (!entity.Has<Position, Appearance>())
+                        {
+                            continue;
+                        }
+                        foreach (var mesh in _testModel.Meshes)
+                        {
+                            foreach (BasicEffect effect in mesh.Effects)
+                            {
+                                effect.World = Matrix.CreateTranslation(World.Get<Position>(entity).WorldPosition);
+                                effect.View = Matrix.CreateLookAt(cameraPosition, cameraTarget, Vector3.Up);
+                                effect.Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45),
+                                    (float) _graphics.Viewport.Width / _graphics.Viewport.Height,
+                                    0.1f,
+                                    500f);
+                                effect.EnableDefaultLighting();
+                                effect.FogEnabled = true;
+                                effect.FogColor = Color.CornflowerBlue.ToVector3();
+                                effect.FogStart = 30f;
+                                effect.FogEnd = 50f;
+                            }
+                            mesh.Draw();
+                        }
+                        
+                    }
+                }
+            }
+        }
+        
+        
+        /*for (var i = 0; i < 20; i++)
         {
             for (var j = 0; j < 20; j++)
             {
@@ -78,6 +121,6 @@ public class RenderingSystem : BaseSystem<World, GameTime>
                 }
             }
 
-        }
+        }*/
     }
 }

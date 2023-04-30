@@ -187,7 +187,6 @@ public class GameRoot : Game
 
 		if (Universe == null) return;
 		World.Destroy(Universe.World);
-		Universe.UpdateSystems.Dispose();
-		Universe.DrawSystems.Dispose();
+		Universe.Cleanup();
 	}
 }

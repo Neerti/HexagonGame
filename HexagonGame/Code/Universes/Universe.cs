@@ -40,10 +40,10 @@ public class Universe
 		UpdateSystems.Initialize();
 		DrawSystems.Initialize();
 		
-		Map = new MapBuilder().NewMap(World, 64, 2, 64);
+		Map = new MapBuilder().NewMap(World, 512, 2, 512);
 	}
 
-	public void Cleanup(GameRoot root)
+	public void Cleanup()
 	{
 		UpdateSystems.Dispose();
 		DrawSystems.Dispose();

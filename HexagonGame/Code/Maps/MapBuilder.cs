@@ -8,10 +8,10 @@ namespace HexagonGame.Maps;
 public class MapBuilder
 {
 	private const float TileSize = .5f;
-	private float TileHeight => (float) Math.Sqrt(3) * TileSize;
-	private float TileWidth => 2 * TileSize;
-	private float TileHorizontalSpacing => (3f / 4f) * TileWidth;
-	private float TileVerticalSpacing => TileHeight;
+	public static float TileHeight => (float) Math.Sqrt(3) * TileSize;
+	public static float TileWidth => 2 * TileSize;
+	public static float TileHorizontalSpacing => (3f / 4f) * TileWidth;
+	public static float TileVerticalSpacing => TileHeight;
 	
 	public LogicalMap NewMap(World world, int mapSizeX, int mapSizeY, int mapSizeZ)
 	{
@@ -26,12 +26,8 @@ public class MapBuilder
 					for (var l = 0; l < LogicalMap.ObjectLayer; l++)
 					{
 						var entity = world.Create(
-							new Position{WorldPosition = new Vector3(
-								x * TileHorizontalSpacing,
-								y * 2,
-								(z * TileVerticalSpacing) + (x % 2 == 0 ? TileVerticalSpacing * 0.5f: 0)
-								)},
-							new Appearance());
+							new Position{WorldPosition = CoordinateToPosition(x, y, z)},
+							new Appearance{ModelColor = Color.White});
 						map.Grid[x, y, z, l] = entity;
 					}
 				}
@@ -39,6 +35,15 @@ public class MapBuilder
 		}
 		
 		return map;
+	}
+
+	public Vector3 CoordinateToPosition(int x, int y, int z)
+	{
+		return new Vector3(
+			x * TileHorizontalSpacing,
+			y * 2,
+			z * TileVerticalSpacing + (x % 2 == 0 ? TileVerticalSpacing * 0.5f : 0)
+		);
 	}
 	
 }

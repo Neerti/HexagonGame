@@ -19,13 +19,6 @@ public class RenderingSystem : BaseSystem<World, GameTime>
     private Matrix _projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(45), 800f / 400f, 0.1f, 100f);
     private GraphicsDevice _graphics;
 
-
-    private float _tileSize = .5f;
-    private float _tileHeight;
-    private float _tileWidth;
-    private float _tileHorizontalSpacing;
-    private float _tileVerticalSpacing;
-
     private Universe _universe;
 
     public RenderingSystem(GameRoot root, World world) : base(world)
@@ -34,15 +27,6 @@ public class RenderingSystem : BaseSystem<World, GameTime>
         _testModel = root.Content.Load<Model>("Models/hexagon");
         _graphics = root.GraphicsDevice;
         _universe = root.Universe;
-    }
-    private QueryDescription _cameraDescription = new QueryDescription().WithAll<Position, Camera>();
-
-    public override void Initialize()
-    {
-        _tileHeight = (float) (Math.Sqrt(3) * _tileSize);
-        _tileWidth = 2 * _tileSize;
-        _tileHorizontalSpacing = (3f / 4f) * _tileWidth;
-        _tileVerticalSpacing = _tileHeight;
     }
 
     public override void Update(in GameTime gameTime)
@@ -59,11 +43,28 @@ public class RenderingSystem : BaseSystem<World, GameTime>
         );
 
         _graphics.DepthStencilState = new DepthStencilState { DepthBufferEnable = true };
-        for (var x = 0; x < _universe.Map.SizeX; x++)
+        
+        var a = (int) Math.Ceiling(cameraTarget.X / MapBuilder.TileHorizontalSpacing);
+        var b = (int) Math.Ceiling(cameraTarget.Z / MapBuilder.TileVerticalSpacing);
+
+        const int offset = 32;
+
+        var lowestCorner = (
+            Math.Clamp(a - offset, 0, _universe.Map.SizeX),
+            Math.Clamp(0, 0, _universe.Map.SizeY),
+            Math.Clamp(b - offset, 0, _universe.Map.SizeZ)
+        );
+        var highestCorner = (
+            Math.Clamp(a + offset, 0, _universe.Map.SizeX),
+            Math.Clamp(1, 0, _universe.Map.SizeY),
+            Math.Clamp(b + offset, 0, _universe.Map.SizeZ)
+        );
+
+        for (var x = lowestCorner.Item1; x < highestCorner.Item1; x++)
         {
-            for (var y = 0; y < _universe.Map.SizeY; y++)
+            for (var y = lowestCorner.Item2; y < highestCorner.Item2; y++)
             {
-                for (var z = 0; z < _universe.Map.SizeZ; z++)
+                for (var z = lowestCorner.Item3; z < highestCorner.Item3; z++)
                 {
                     for (var l = 0; l < LogicalMap.MaxLayers; l++)
                     {
@@ -85,8 +86,10 @@ public class RenderingSystem : BaseSystem<World, GameTime>
                                 effect.EnableDefaultLighting();
                                 effect.FogEnabled = true;
                                 effect.FogColor = Color.CornflowerBlue.ToVector3();
-                                effect.FogStart = 30f;
+                                effect.FogStart = 45f;
                                 effect.FogEnd = 50f;
+                                //effect.DiffuseColor = new Vector3((x % 20) / 20f, 1, (z % 20) / 20f);
+                                effect.DiffuseColor = entity.Get<Appearance>().ModelColor.ToVector3();
                             }
                             mesh.Draw();
                         }
